@@ -1,6 +1,6 @@
 package com.ravn.ecommerce.domain.model.product;
 
-import com.ravn.ecommerce.domain.exceptions.BussinessRoleViolation;
+import com.ravn.ecommerce.domain.exceptions.BusinessRoleViolation;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -27,7 +27,7 @@ public class Review {
 
     public void updateRating(int newRating) {
         if (newRating < 1 || newRating > 5) {
-            throw new BussinessRoleViolation("Rating must be between 1 and 5");
+            throw new BusinessRoleViolation("Rating must be between 1 and 5");
         }
         this.rating = newRating;
     }

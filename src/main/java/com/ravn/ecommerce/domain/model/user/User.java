@@ -23,17 +23,29 @@ public class User {
         this.createdAt = createdAt;
         this.addresses = new ArrayList<>();
     }
-    public void activate(){
+
+    public void activate() {
         this.active = true;
     }
+
     public void deactivate() {
         this.active = false;
     }
 
-    public boolean isManager(){
+    public void changePassword(String newPasswordHash) {
+        if (newPasswordHash == null || newPasswordHash.isBlank()) {
+            throw new IllegalArgumentException("Password hash cannot be null or empty");
+        }
+        this.passwordHash = newPasswordHash;
+    }
+
+    public boolean isManager() {
         return role == UserRole.MANAGER;
     }
-    public boolean isClient() {return role == UserRole.CLIENT; }
+
+    public boolean isClient() {
+        return role == UserRole.CLIENT;
+    }
 
     public void addAddress(Address address) {
         if (this.addresses == null) {
@@ -48,7 +60,8 @@ public class User {
     }
 
     public void setDefaultAddress(Long addressId) {
-        if (this.addresses == null) return;
+        if (this.addresses == null)
+            return;
 
         this.addresses.forEach(addr -> {
             if (addr.getId().equals(addressId)) {
@@ -60,7 +73,8 @@ public class User {
     }
 
     public Address getDefaultAddress() {
-        if (this.addresses == null) return null;
+        if (this.addresses == null)
+            return null;
 
         return this.addresses.stream()
                 .filter(Address::isDefault)
@@ -98,8 +112,10 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         User user = (User) o;
         return Objects.equals(id, user.id);
     }

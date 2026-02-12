@@ -1,29 +1,31 @@
 package com.ravn.ecommerce.domain.model.product;
 
+import lombok.Builder;
+
+import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Builder
 public class ProductImage {
     private Long id;
     private Long productId;
     private String imageUrl;
-    private boolean isPrimary;
-
-    public ProductImage() {
+    private Boolean isPrimary;
+    private LocalDateTime createdAt;
+    public static ProductImage create(Long productId , String imageUrl , Boolean isPrimary) {
+        return ProductImage.builder()
+                .productId(productId)
+                .imageUrl(imageUrl)
+                .isPrimary(isPrimary != null ? isPrimary : false)
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 
-    public ProductImage(Long id, Long productId, String imageUrl, boolean isPrimary) {
-        this.id = id;
-        this.productId = productId;
-        this.imageUrl = imageUrl;
-        this.isPrimary = isPrimary;
-    }
-
-
-    public void setAsPrimary() {
+    public void markAsPrimary() {
         this.isPrimary = true;
     }
 
-    public void unsetPrimary() {
+    public void unmarkAsPrimary() {
         this.isPrimary = false;
     }
 
@@ -50,6 +52,8 @@ public class ProductImage {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public LocalDateTime getCreatedAt(){ return createdAt;}
 
     public boolean isPrimary() {
         return isPrimary;

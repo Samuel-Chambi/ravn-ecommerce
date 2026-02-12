@@ -1,7 +1,7 @@
 package com.ravn.ecommerce.domain.exceptions;
 
-public class EmptyCartItemException extends RuntimeException {
+public class EmptyCartItemException extends DomainException {
     public EmptyCartItemException(String message) {
-        super(message);
+        super(message, "EMPTY_CART_ITEM");
     }
 }

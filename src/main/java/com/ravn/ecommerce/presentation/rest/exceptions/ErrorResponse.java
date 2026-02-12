@@ -21,7 +21,7 @@ public class ErrorResponse {
     private String errorCode;
     private LocalDateTime timestamp;
     private String path;
-    private Map<String , Object> details;
+    private Map<String, Object> details;
     private List<ValidationError> validationErrors;
 
     @Data
@@ -34,7 +34,7 @@ public class ErrorResponse {
         private Object rejectedValue;
     }
 
-    public static ErrorResponse of(String error, String message, String errorCode){
+    public static ErrorResponse of(String error, String message, String errorCode) {
         return ErrorResponse.builder()
                 .error(error)
                 .message(message)
@@ -43,7 +43,7 @@ public class ErrorResponse {
                 .build();
     }
 
-    public static  ErrorResponse of(String error, String message, String errorCode , String path){
+    public static ErrorResponse of(String error, String message, String errorCode, String path) {
         return ErrorResponse.builder()
                 .error(error)
                 .message(message)

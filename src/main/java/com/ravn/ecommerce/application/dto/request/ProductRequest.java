@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.DTO.products;
+package com.ravn.ecommerce.application.dto.request;
 
 import com.ravn.ecommerce.application.validation.ValidPrice;
 import com.ravn.ecommerce.application.validation.ValidStock;
@@ -17,13 +17,13 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductRequestDto {
+public class ProductRequest {
     @NotBlank(message = "Product name is required")
-    @Size(min = 3, max = 1000 , message = "Product name must be between 3 and 100 characters")
+    @Size(min = 3, max = 1000, message = "Product name must be between 3 and 100 characters")
     private String name;
 
     @NotBlank(message = "Description is required")
-    @Size(min = 10, max = 1000 , message = "Description must be between 10 and 100 characters")
+    @Size(min = 10, max = 1000, message = "Description must be between 10 and 100 characters")
     private String description;
 
     @NotNull(message = "Price is required")

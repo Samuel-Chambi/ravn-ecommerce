@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.DTO.carts;
+package com.ravn.ecommerce.application.dto.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddToCartRequestDto {
+public class AddToCartRequest {
 
     @NotNull(message = "Product ID is required")
     @Positive(message = "Product ID must be positive")

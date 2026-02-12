@@ -1,6 +1,8 @@
 package com.ravn.ecommerce.domain.model.product;
 
-import com.ravn.ecommerce.domain.exceptions.BussinessRoleViolation;
+import com.ravn.ecommerce.domain.exceptions.BusinessRoleViolation;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import java.lang.Long;
 import java.math.BigDecimal;
@@ -9,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Builder
+@AllArgsConstructor
 public class Product {
     private Long id;
     private String name;
@@ -47,7 +51,7 @@ public class Product {
 
     public void updatePrice(BigDecimal newPrice) {
         if (newPrice.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new BussinessRoleViolation("Price must be greater than zero");
+            throw new BusinessRoleViolation("Price must be greater than zero");
         }
         this.price = newPrice;
     }

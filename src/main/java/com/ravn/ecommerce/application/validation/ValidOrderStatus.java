@@ -6,13 +6,22 @@ import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
-@Target({ElementType.FIELD , ElementType.PARAMETER})
+/**
+ * Custom validation annotation for order status transitions.
+ * Validates that status changes are allowed based on business rules.
+ * 
+ * Usage: @ValidOrderStatus(allowedStatuses = {PENDING, PROCESSING})
+ */
+@Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = OrderStatusValidator.class)
 @Documented
 public @interface ValidOrderStatus {
     String message() default "Invalid order status transition";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
+
     OrderStatus[] allowedStatuses() default {};
 }

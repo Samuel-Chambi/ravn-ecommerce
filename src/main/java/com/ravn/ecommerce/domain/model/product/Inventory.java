@@ -1,6 +1,5 @@
 package com.ravn.ecommerce.domain.model.product;
 
-import com.ravn.ecommerce.domain.exceptions.BussinessRoleViolation;
 import com.ravn.ecommerce.domain.exceptions.InsufficientStockException;
 import com.ravn.ecommerce.domain.exceptions.InvalidStockLogicException;
 
@@ -23,7 +22,7 @@ public class Inventory {
         this.updatedAt = updatedAt;
     }
 
-    // Métodos de negocio
+    // Business method
     public void addStock(int amount) {
         if (amount <= 0) {
             throw new InvalidStockLogicException("Amount must be positive");

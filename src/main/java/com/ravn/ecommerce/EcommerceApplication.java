@@ -17,17 +17,4 @@ public class EcommerceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(EcommerceApplication.class, args);
 	}
-
-	@Bean
-	public CommandLineRunner probConnexion(DataSource dataSource) {
-		return args -> {
-			try (Connection conn = dataSource.getConnection()) {
-				System.out.println("✅ ==========================================");
-				System.out.println("✅ Successful connection: " + conn.getCatalog());
-				System.out.println("✅ ==========================================");
-			} catch (Exception e) {
-				System.err.println("❌ Fatal Error: " + e.getMessage());
-			}
-		};
-	}
 }

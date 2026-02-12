@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.DTO.orders;
+package com.ravn.ecommerce.application.dto.request;
 
 import com.ravn.ecommerce.application.validation.ValidOrderStatus;
 import com.ravn.ecommerce.domain.model.order.OrderStatus;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateDeliveryStatusRequestDto {
+public class UpdateDeliveryStatusRequest {
 
     @NotBlank(message = "Status is required")
     @ValidOrderStatus(
