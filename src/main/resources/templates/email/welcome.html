@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{email/base :: layout(~{::content})}">
+
+<body>
+    <div th:fragment="content">
+        <h2>Welcome to Ravn Ecommerce!</h2>
+        <p>Hello <span th:text="${name}">User</span>,</p>
+        <p>We are thrilled to have you on board. Start exploring our latest products now.</p>
+        <p>
+            <a href="#" class="button">Start Shopping</a>
+        </p>
+    </div>
+</body>
+
+</html>
