@@ -3,6 +3,8 @@ package com.ravn.ecommerce.domain.model.product;
 import com.ravn.ecommerce.domain.exceptions.BusinessRoleViolation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.lang.Long;
 import java.math.BigDecimal;
@@ -13,6 +15,8 @@ import java.util.Objects;
 
 @Builder
 @AllArgsConstructor
+@Getter
+@Setter
 public class Product {
     private Long id;
     private String name;
@@ -22,6 +26,7 @@ public class Product {
     private Long categoryId;
     private Long createdBy;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private List<ProductImage> images;
     private Inventory inventory;
 
@@ -29,7 +34,7 @@ public class Product {
     }
 
     public Product(Long id, String name, String description, BigDecimal price, boolean isEnabled,
-            Long categoryId, Long createdBy, LocalDateTime createdAt) {
+                   Long categoryId, Long createdBy, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -83,86 +88,6 @@ public class Product {
 
     public int getAvailableQuantity() {
         return inventory != null ? inventory.getQuantity() : 0;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public Long getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public Long getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(Long createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public List<ProductImage> getImages() {
-        return images;
-    }
-
-    public void setImages(List<ProductImage> images) {
-        this.images = images;
-    }
-
-    public Inventory getInventory() {
-        return inventory;
-    }
-
-    public void setInventory(Inventory inventory) {
-        this.inventory = inventory;
     }
 
     @Override

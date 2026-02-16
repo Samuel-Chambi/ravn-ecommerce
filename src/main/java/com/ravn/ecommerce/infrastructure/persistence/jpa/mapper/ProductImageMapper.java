@@ -5,9 +5,12 @@ import com.ravn.ecommerce.infrastructure.persistence.jpa.entity.ProductImageJpaE
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProductImageMapper {
+public class ProductImageMapper implements Mapper<ProductImageJpaEntity, ProductImage> {
+
+    @Override
     public ProductImage toDomain(ProductImageJpaEntity productImageJpaEntity) {
-        if (productImageJpaEntity == null) return null;
+        if (productImageJpaEntity == null)
+            return null;
         return ProductImage.builder()
                 .id(productImageJpaEntity.getId())
                 .productId(productImageJpaEntity.getProductId())
@@ -17,8 +20,10 @@ public class ProductImageMapper {
                 .build();
     }
 
+    @Override
     public ProductImageJpaEntity toJpaEntity(ProductImage productImage) {
-        if (productImage == null) return null;
+        if (productImage == null)
+            return null;
         return ProductImageJpaEntity.builder()
                 .id(productImage.getId())
                 .productId(productImage.getProductId())

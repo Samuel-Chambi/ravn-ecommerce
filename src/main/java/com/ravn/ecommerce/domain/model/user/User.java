@@ -1,10 +1,17 @@
 package com.ravn.ecommerce.domain.model.user;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
     private Long id;
     private String email;
@@ -12,6 +19,7 @@ public class User {
     private UserRole role;
     private boolean active;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private List<Address> addresses;
 
     public User(Long id, String email, String passwordHash, UserRole role, boolean active, LocalDateTime createdAt) {
@@ -104,6 +112,10 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
     public Long getId() {

@@ -18,22 +18,21 @@ public class ProductImageJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "product_id" , nullable = false)
+    @Column(name = "product_id", nullable = false, insertable = false, updatable = false)
     private Long productId;
-    @Column(name = "image_url" , nullable = false , length = 500)
+    @Column(name = "image_url", nullable = false, length = 500)
     private String imageUrl;
-    @Column(name = "is_primary" , nullable = false)
+    @Column(name = "is_primary", nullable = false)
     private Boolean isPrimary;
-    @Column(name = "created_at" , nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     protected void onCreate() {
-        if(createdAt == null) {
+        if (createdAt == null) {
             createdAt = LocalDateTime.now();
         }
-        if(isPrimary == null) {
+        if (isPrimary == null) {
             isPrimary = false;
         }
     }
 }
-

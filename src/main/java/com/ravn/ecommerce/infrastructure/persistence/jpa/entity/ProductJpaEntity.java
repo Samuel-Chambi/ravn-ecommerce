@@ -1,10 +1,12 @@
 package com.ravn.ecommerce.infrastructure.persistence.jpa.entity;
 
+import com.ravn.ecommerce.domain.model.product.Inventory;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -37,6 +39,17 @@ public class ProductJpaEntity {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private List<ProductImageJpaEntity> images;
+
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private InventoryJpaEntity inventory;
 
     @PrePersist
     protected void onCreate() {

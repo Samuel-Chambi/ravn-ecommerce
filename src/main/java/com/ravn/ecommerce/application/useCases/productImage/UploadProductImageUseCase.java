@@ -1,9 +1,11 @@
-package com.ravn.ecommerce.application.useCases.product;
+package com.ravn.ecommerce.application.useCases.productImage;
 
 import com.ravn.ecommerce.application.dto.response.ProductImageResponse;
 import com.ravn.ecommerce.application.repositories.ProductImageRepository;
 import com.ravn.ecommerce.application.repositories.ProductRepository;
 import com.ravn.ecommerce.application.services.ImageStorageService;
+import com.ravn.ecommerce.application.useCases.UseCase;
+import com.ravn.ecommerce.application.useCases.productImage.commands.UploadProductImageCommand;
 import com.ravn.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ravn.ecommerce.domain.exceptions.InvalidOperationException;
 import com.ravn.ecommerce.domain.model.product.ProductImage;
@@ -25,15 +27,18 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UploadProductImageUseCase {
+public class UploadProductImageUseCase implements UseCase<UploadProductImageCommand, List<ProductImageResponse>> {
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
     private final ImageStorageService imageStorageService;
     private static final int MAX_IMAGES_PER_PRODUCT = 5;
 
     @Transactional
-    public List<ProductImageResponse> execute(Long productId, List<MultipartFile> files,
-            Boolean markFirstAsPrimary) {
+    @Override
+    public List<ProductImageResponse> execute(UploadProductImageCommand command) {
+        Long productId = command.productId();
+        List<MultipartFile> files = command.files();
+        Boolean markFirstAsPrimary = command.markFirstAsPrimary();
         int newFiles = files.size();
         log.info("Uploading {} images, for product {}", newFiles, productId);
 
