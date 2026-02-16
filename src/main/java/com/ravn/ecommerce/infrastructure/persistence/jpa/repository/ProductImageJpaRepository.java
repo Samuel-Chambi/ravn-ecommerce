@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProductImageJpaRepository extends JpaRepository<ProductImageJpaEntity, Long> {
+public interface ProductImageJpaRepository extends JpaRepository<ProductImageJpaEntity , Long> {
     List<ProductImageJpaEntity> findByProductId(Long productId);
 
     Optional<ProductImageJpaEntity> findByProductIdAndIsPrimaryTrue(Long productId);
