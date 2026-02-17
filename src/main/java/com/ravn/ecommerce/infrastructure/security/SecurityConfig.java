@@ -13,31 +13,38 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder();
-        }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-        @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-                http
-                                // Disable CSRF for testing (re-enable in production)
-                                .csrf(csrf -> csrf.disable())
-                                // Disable CORS for testing (configure properly in production)
-                                .cors(cors -> cors.disable())
-                                // Stateless session management
-                                .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                                // Authorize requests
-                                .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/test/**", "/auth/**", "/public/**").permitAll()
-                                                // Allow product image endpoints
-                                                .requestMatchers("/products/*/images", "/products/*/images/**")
-                                                .permitAll()
-                                                // Allow serving static images
-                                                .requestMatchers("/uploads/**").permitAll()
-                                                .anyRequest().authenticated());
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                // Disable CSRF for testing (re-enable in production)
+                .csrf(csrf -> csrf.disable())
+                // Disable CORS for testing (configure properly in production)
+                .cors(cors -> cors.disable())
+                // Stateless session management
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Authorize requests
+                // Add Dev Filter
+                .addFilterBefore(new DevSecurityFilter(),
+                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(auth -> auth
+                        // Public Endpoints
+                        .requestMatchers("/categories/**").permitAll()
+                        .requestMatchers("/products/**").permitAll()
+                        .requestMatchers("/api/test/**", "/auth/**", "/public/**").permitAll()
+                        // Allow product image endpoints
+                        .requestMatchers("/products/*/images", "/products/*/images/**")
+                        .permitAll()
+                        // Allow serving static images
+                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/favorites/**").permitAll()
+                        .anyRequest().authenticated());
 
-                return http.build();
-        }
+        return http.build();
+    }
 }

@@ -30,6 +30,11 @@ public class EmailServiceImpl implements EmailService {
     @Override
     @Async // Sends email in separate thread to avoid blocking
     public void sendHtmlEmail(String to, String subject, String templateName, Map<String, Object> context) {
+        if (!appConfig.getEmail().isEnabled()) {
+            log.info("Email service is disabled. Skipping sending email '{}' to {}", subject, to);
+            return;
+        }
+
         try {
             // Process Thymeleaf template with context variables
             String htmlContent = emailTemplateEngine.process(templateName, context);

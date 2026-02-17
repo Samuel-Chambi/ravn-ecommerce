@@ -5,7 +5,8 @@ import com.ravn.ecommerce.infrastructure.persistence.jpa.entity.ProductImageJpaE
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProductImageMapper {
+public class ProductImageMapper implements Mapper<ProductImageJpaEntity , ProductImage>{
+    @Override
     public ProductImage toDomain(ProductImageJpaEntity productImageJpaEntity) {
         if (productImageJpaEntity == null) return null;
         return ProductImage.builder()
@@ -16,7 +17,7 @@ public class ProductImageMapper {
                 .createdAt(productImageJpaEntity.getCreatedAt())
                 .build();
     }
-
+    @Override
     public ProductImageJpaEntity toJpaEntity(ProductImage productImage) {
         if (productImage == null) return null;
         return ProductImageJpaEntity.builder()

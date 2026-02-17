@@ -3,6 +3,8 @@ package com.ravn.ecommerce.domain.model.product;
 import com.ravn.ecommerce.domain.exceptions.BusinessRoleViolation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.lang.Long;
 import java.math.BigDecimal;
@@ -13,6 +15,8 @@ import java.util.Objects;
 
 @Builder
 @AllArgsConstructor
+@Getter
+@Setter
 public class Product {
     private Long id;
     private String name;
@@ -22,6 +26,7 @@ public class Product {
     private Long categoryId;
     private Long createdBy;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private List<ProductImage> images;
     private Inventory inventory;
 
