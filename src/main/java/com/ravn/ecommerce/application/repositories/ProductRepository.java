@@ -5,6 +5,7 @@ import org.springframework.data.domain.ScrollPosition;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Window;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -14,11 +15,13 @@ import java.util.Optional;
 public interface ProductRepository {
     Optional<Product> findById(Long productId);
 
-    java.util.List<Product> findAllById(java.util.List<Long> ids);
+    List<Product> findAllById(List<Long> ids);
 
     Product save(Product product);
 
     void deleteById(Long productId);
+
+    boolean existsById(Long productId);
 
     Window<Product> findBy(ScrollPosition position, int limit, Sort sort);
 

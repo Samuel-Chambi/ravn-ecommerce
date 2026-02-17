@@ -39,6 +39,11 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public boolean existsById(Long productId){
+        return jpaRepository.existsById(productId);
+    }
+
+    @Override
     @Transactional
     public Product save(Product product) {
         ProductJpaEntity jpaEntity = mapper.toJpaEntity(product);

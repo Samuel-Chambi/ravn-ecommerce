@@ -48,8 +48,7 @@ public class CategoryController {
     public ResponseEntity<CategoryResponse> createCategory(
             @RequestBody @Valid CreateCategoryRequest request) {
         Long userId = currentUserService.getCurrentUserId();
-        CreateCategoryCommand command = new CreateCategoryCommand(request, userId);
-        CategoryResponse category = createCategoryUseCase.execute(command);
+        CategoryResponse category = createCategoryUseCase.execute(new CreateCategoryCommand(request, userId));
         return ResponseEntity.status(HttpStatus.CREATED).body(category);
     }
 
@@ -58,8 +57,8 @@ public class CategoryController {
             @RequestBody @Valid UpdateCategoryRequest request,
             @PathVariable Long categoryId) {
         Long userId = currentUserService.getCurrentUserId();
-        UpdateCategoryCommand command = new UpdateCategoryCommand(request, userId, categoryId);
-        return ResponseEntity.status(HttpStatus.OK).body(updateCategoryUseCase.execute(command));
+        CategoryResponse response = updateCategoryUseCase.execute(new UpdateCategoryCommand(request, userId, categoryId));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/{categoryId}")
@@ -69,6 +68,6 @@ public class CategoryController {
         Long userId = currentUserService.getCurrentUserId();
         DeleteCategoryCommand command = new DeleteCategoryCommand(categoryId, userId);
         deleteCategoryUseCase.execute(command);
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 }
