@@ -26,8 +26,8 @@ public class CurrentUserService {
      * @return the authenticated User
      * @throws UnauthorizedException if no user is authenticated
      *                               <p>
-     *                                                             TODO: Implement once JWT authentication is
-     *                                                             ready
+     *                               TODO: Implement once JWT authentication is
+     *                               ready
      */
     public User getCurrentUser() {
         // TODO: This method requires fetching the entity from DB or having a custom
@@ -43,27 +43,26 @@ public class CurrentUserService {
      * @throws UnauthorizedException if no user is authenticated
      */
     public Long getCurrentUserId() {
-        return 2L;
-        //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//        if (authentication == null || !authentication.isAuthenticated()
-//                || "anonymousUser".equals(authentication.getPrincipal())) {
-//            throw new UnauthorizedException("No authenticated user found");
-//        }
-//
-//        Object principal = authentication.getPrincipal();
-//        if (principal instanceof UserDetails) {
-//            return Long.parseLong(((UserDetails) principal).getUsername());
-//        } else if (principal instanceof String) {
-//            // Fallback if principal is just the username string
-//            try {
-//                return Long.parseLong((String) principal);
-//            } catch (NumberFormatException e) {
-//                throw new UnauthorizedException("Invalid user ID in principal");
-//            }
-//        }
-//
-//        throw new UnauthorizedException("Could not extract user ID from authentication");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new UnauthorizedException("No authenticated user found");
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserDetails) {
+            return Long.parseLong(((UserDetails) principal).getUsername());
+        } else if (principal instanceof String) {
+            // Fallback if principal is just the username string
+            try {
+                return Long.parseLong((String) principal);
+            } catch (NumberFormatException e) {
+                throw new UnauthorizedException("Invalid user ID in principal");
+            }
+        }
+
+        throw new UnauthorizedException("Could not extract user ID from authentication");
     }
 
     /**
@@ -72,9 +71,9 @@ public class CurrentUserService {
      * @return the user ID
      * @throws UnauthorizedException if no user is authenticated
      */
-//    public Long getCurrentUserId() {
-//        return getCurrentUser().getId();
-//    }
+    // public Long getCurrentUserId() {
+    // return getCurrentUser().getId();
+    // }
 
     /**
      * Checks if there is a currently authenticated user.
