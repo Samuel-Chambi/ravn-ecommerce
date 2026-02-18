@@ -3,10 +3,12 @@ package com.ravn.ecommerce.presentation.rest.controllers;
 import com.ravn.ecommerce.application.dto.request.cart.AddToCartRequest;
 import com.ravn.ecommerce.application.dto.request.cart.UpdateItemQuantityRequest;
 import com.ravn.ecommerce.application.dto.response.CartResponse;
+import com.ravn.ecommerce.application.dto.response.OrderResponse;
 import com.ravn.ecommerce.application.useCases.cart.*;
 import com.ravn.ecommerce.application.useCases.cart.command.AddItemToCartCommand;
 import com.ravn.ecommerce.application.useCases.cart.command.RemoveItemFromCartCommand;
 import com.ravn.ecommerce.application.useCases.cart.command.UpdateItemQuantityCommand;
+import com.ravn.ecommerce.application.useCases.order.CreateOrderFromCartUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,8 @@ public class CartController {
     private final ClearCartUseCase clearCartUseCase;
     private final UpdateItemQuantityUseCase updateItemQuantityUseCase;
     private final RemoveItemFromCartUseCase removeItemFromCartUseCase;
+    private final CreateOrderFromCartUseCase createOrderFromCartUseCase;
+
     @GetMapping
     public ResponseEntity<CartResponse> getCurrentUserCart(
             @PathVariable Long userId
@@ -35,6 +39,13 @@ public class CartController {
     ){
         return ResponseEntity.status(HttpStatus.OK).body(addItemToCartUseCase.execute(new AddItemToCartCommand(userId , request.getProductId(), request.getQuantity())));
     }
+
+    @PostMapping("/check-out")
+    public ResponseEntity<OrderResponse> createOrderFromCart(@PathVariable Long userId) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(createOrderFromCartUseCase.execute(userId));
+    }
+
     @DeleteMapping
     public ResponseEntity<Void> clearCurrentUserCart(
             @PathVariable Long userId

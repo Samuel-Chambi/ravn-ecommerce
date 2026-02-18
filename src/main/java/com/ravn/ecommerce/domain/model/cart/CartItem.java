@@ -23,7 +23,7 @@ public class CartItem {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // Métodos de negocio
+    // Business methods
     public void setQuantity(int newQuantity) {
         if (newQuantity <= 0) {
             throw new EmptyCartItemException("Quantity must be positive");

@@ -33,7 +33,7 @@ public class Cart {
 
         Optional<CartItem> existingItem = findItemByProductId(item.getProductId());
         if (existingItem.isPresent()) {
-            total = total.add(existingItem.get().getSubTotal().multiply(BigDecimal.valueOf(-1)));
+            total = total.subtract(existingItem.get().getSubTotal());
             existingItem.get().increaseQuantity(item.getQuantity());
             total = total.add(existingItem.get().getSubTotal());
         } else {
