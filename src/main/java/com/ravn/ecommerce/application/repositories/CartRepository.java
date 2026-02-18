@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface CartRepository {
     Cart save(Cart cart);
     Optional<Cart> findByStatusAndUserId(CartStatus status , Long userId);
+    void deleteById(Long cartId);
 }

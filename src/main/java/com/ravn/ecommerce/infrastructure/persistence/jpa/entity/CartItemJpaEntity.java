@@ -21,7 +21,7 @@ public class CartItemJpaEntity {
     private Long id;
     @Column(name = "product_id")
     private Long productId;
-    @Column(name = "cart_id")
+    @Column(name = "cart_id", insertable = false, updatable = false)
     private Long cartId;
     @Column(name = "quantity")
     private Integer quantity;

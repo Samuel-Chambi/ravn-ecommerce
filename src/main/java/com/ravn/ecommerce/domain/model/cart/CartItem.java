@@ -27,7 +27,9 @@ public class CartItem {
         if (newQuantity <= 0) {
             throw new EmptyCartItemException("Quantity must be positive");
         }
+        BigDecimal unitPrice = subTotal.divide(BigDecimal.valueOf(quantity), java.math.RoundingMode.HALF_UP);
         this.quantity = newQuantity;
+        this.subTotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
     }
 
     public void increaseQuantity(int amount) {

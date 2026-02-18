@@ -23,6 +23,11 @@ public class CartItemRepositoryImpl implements CartItemRepository {
     }
     @Override
     public Optional<CartItem> findByProductIdAndCartId(Long productId, Long cartId){
-        return cartItemJpaRepository.findByProductIdAndCartId(productId, cartId).map(cartItemMapper::toDomain);
+        return cartItemJpaRepository.findByProductIdAndCartId(productId, cartId)
+                .map(cartItemMapper::toDomain);
+    }
+    @Override
+    public boolean existsByProductIdAndCartId(Long productId , Long cartId){
+        return cartItemJpaRepository.existsByProductIdAndCartId(productId , cartId);
     }
 }

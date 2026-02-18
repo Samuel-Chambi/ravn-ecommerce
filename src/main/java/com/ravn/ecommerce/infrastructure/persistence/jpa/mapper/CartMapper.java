@@ -25,7 +25,9 @@ public class CartMapper implements Mapper<CartJpaEntity, Cart> {
                                                 .reduce(BigDecimal.ZERO, BigDecimal::add) : BigDecimal.ZERO)
                                 .items(cartJpaEntity.getCartItems() != null ? cartJpaEntity.getCartItems().stream()
                                                 .map(cartItemMapper::toDomain)
-                                                .toList() : null)
+                                                .collect(java.util.stream.Collectors
+                                                                .toCollection(java.util.ArrayList::new))
+                                                : null)
                                 .createdAt(cartJpaEntity.getCreatedAt())
                                 .updatedAt(cartJpaEntity.getUpdatedAt())
                                 .build();

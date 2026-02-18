@@ -31,5 +31,9 @@ public class CartRepositoryImpl implements CartRepository {
         ).map(cartMapper::toDomain);
     }
 
+    @Override
+    public void deleteById(Long cartId){
+        cartJpaRepository.deleteById(cartId);
+    }
 
 }
