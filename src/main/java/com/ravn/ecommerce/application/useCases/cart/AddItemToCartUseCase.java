@@ -69,7 +69,7 @@ public class AddItemToCartUseCase implements UseCase<AddItemToCartCommand, CartR
                 .build();
 
         currentCart.addItem(itemAdded);
-
+        currentCart.setUpdatedAt(LocalDateTime.now());
         Cart updatedCart = cartRepository.save(currentCart);
         return CartResponse.toDto(updatedCart);
     }
