@@ -1,7 +1,5 @@
 package com.ravn.ecommerce.application.useCases.like;
 
-import com.ravn.ecommerce.application.dto.response.PagedProductResponse;
-import com.ravn.ecommerce.application.dto.response.ProductResponse;
 import com.ravn.ecommerce.application.repositories.LikeRepository;
 import com.ravn.ecommerce.application.repositories.ProductRepository;
 import com.ravn.ecommerce.application.repositories.UserRepository;

@@ -38,12 +38,11 @@ public class SecurityConfig {
                         .requestMatchers("/products/**").permitAll()
                         .requestMatchers("/api/test/**", "/auth/**", "/public/**").permitAll()
                         // Allow product image endpoints
-                        .requestMatchers("/products/*/images", "/products/*/images/**")
-                        .permitAll()
+                        .requestMatchers("/products/*/images", "/products/*/images/**").permitAll()
                         // Allow serving static images
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/favorites/**").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().permitAll());
 
         return http.build();
     }

@@ -1,6 +1,7 @@
 package com.ravn.ecommerce.domain.model.cart;
 
 import com.ravn.ecommerce.domain.exceptions.CartNotActiveException;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -8,24 +9,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Cart {
     private Long id;
     private Long userId;
     private CartStatus status;
-    private LocalDateTime createdAt;
+    private BigDecimal total;
     private List<CartItem> items;
-
-    public Cart() {
-    }
-
-    public Cart(Long id, Long userId, CartStatus status, LocalDateTime createdAt) {
-        this.id = id;
-        this.userId = userId;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.items = new ArrayList<>();
-    }
-
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     public void addItem(CartItem item) {
         if (this.status != CartStatus.ACTIVE) {
             throw new CartNotActiveException("Cannot add items to a non-active cart");
@@ -37,9 +33,12 @@ public class Cart {
 
         Optional<CartItem> existingItem = findItemByProductId(item.getProductId());
         if (existingItem.isPresent()) {
+            total = total.add(existingItem.get().getSubTotal().multiply(BigDecimal.valueOf(-1)));
             existingItem.get().increaseQuantity(item.getQuantity());
+            total = total.add(existingItem.get().getSubTotal());
         } else {
             this.items.add(item);
+            total = total.add(item.getSubTotal());
         }
     }
 
@@ -75,21 +74,12 @@ public class Cart {
 
     public int getTotalItems() {
         if (this.items == null) return 0;
-
         return this.items.stream()
                 .mapToInt(CartItem::getQuantity)
                 .sum();
     }
 
-    public BigDecimal getTotalAmount() {
-        if (this.items == null) return BigDecimal.ZERO;
-
-        return this.items.stream()
-                .map(CartItem::getSubtotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    private Optional<CartItem> findItemByProductId(Long productId) {
+    public Optional<CartItem> findItemByProductId(Long productId) {
         if (this.items == null) return Optional.empty();
 
         return this.items.stream()
