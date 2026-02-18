@@ -5,6 +5,7 @@ import com.ravn.ecommerce.domain.exceptions.InvalidCartLogicException;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -27,7 +28,7 @@ public class CartItem {
         if (newQuantity <= 0) {
             throw new EmptyCartItemException("Quantity must be positive");
         }
-        BigDecimal unitPrice = subTotal.divide(BigDecimal.valueOf(quantity), java.math.RoundingMode.HALF_UP);
+        BigDecimal unitPrice = subTotal.divide(BigDecimal.valueOf(quantity), RoundingMode.HALF_UP);
         this.quantity = newQuantity;
         this.subTotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
     }
@@ -36,7 +37,7 @@ public class CartItem {
         if (amount <= 0) {
             throw new InvalidCartLogicException("Amount must be positive");
         }
-        BigDecimal unitPrice = subTotal.divide(BigDecimal.valueOf(quantity), java.math.RoundingMode.HALF_UP);
+        BigDecimal unitPrice = subTotal.divide(BigDecimal.valueOf(quantity), RoundingMode.HALF_UP);
         this.quantity += amount;
         this.subTotal = this.subTotal.add(unitPrice.multiply(BigDecimal.valueOf(amount)));
     }

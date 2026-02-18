@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -25,8 +27,7 @@ public class CartMapper implements Mapper<CartJpaEntity, Cart> {
                                                 .reduce(BigDecimal.ZERO, BigDecimal::add) : BigDecimal.ZERO)
                                 .items(cartJpaEntity.getCartItems() != null ? cartJpaEntity.getCartItems().stream()
                                                 .map(cartItemMapper::toDomain)
-                                                .collect(java.util.stream.Collectors
-                                                                .toCollection(java.util.ArrayList::new))
+                                                .collect(Collectors.toCollection(ArrayList::new))
                                                 : null)
                                 .createdAt(cartJpaEntity.getCreatedAt())
                                 .updatedAt(cartJpaEntity.getUpdatedAt())
