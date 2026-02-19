@@ -1,7 +1,5 @@
-package com.ravn.ecommerce.application.useCases.user;
+package com.ravn.ecommerce.application.usecases.user;
 
-import com.ravn.ecommerce.application.events.EventPublisher;
-import com.ravn.ecommerce.application.services.EmailService;
 import com.ravn.ecommerce.domain.model.user.User;
 import com.ravn.ecommerce.domain.model.user.UserRole;
 import org.awaitility.Awaitility;

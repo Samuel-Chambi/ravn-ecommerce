@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.useCases.user;
+package com.ravn.ecommerce.application.usecases.user;
 
 import com.ravn.ecommerce.application.services.EmailService;
 import lombok.RequiredArgsConstructor;

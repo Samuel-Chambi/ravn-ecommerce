@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{email/base :: layout(~{::content})}">
+
+<body>
+    <div th:fragment="content">
+        <h2>⚠️ Your Favorite Item is Almost Gone!</h2>
+        <p>Hello <span th:text="${email}">User</span>,</p>
+        <p>Hurry! Your liked product <strong th:text="${productName}">Product</strong> has only
+            <strong th:text="${stock}">2</strong> unit(s) left in stock!
+        </p>
+        <p>Don't miss out — grab it before it's too late.</p>
+    </div>
+</body>
+
+</html>

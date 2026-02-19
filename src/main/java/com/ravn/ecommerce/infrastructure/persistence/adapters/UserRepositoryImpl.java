@@ -22,6 +22,16 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Optional<User> findByEmail(String email) {
+        return userJpaRepository.findByEmail(email).map(mapper::toDomain);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userJpaRepository.existsByEmail(email);
+    }
+
+    @Override
     public User save(User user) {
         UserJpaEntity entity = mapper.toJpaEntity(user);
         UserJpaEntity saved = userJpaRepository.save(entity);
@@ -35,6 +45,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void deleteById(Long userId) {
-        // userJpaRepository.deleteById(userId);
+        // soft delete — not implemented yet
     }
 }

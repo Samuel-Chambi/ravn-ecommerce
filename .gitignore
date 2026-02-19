@@ -35,3 +35,4 @@ build/
 ### Local Configuration (use application-local.yml instead) ###
 application-local.yml
 application-local.properties
+*.sql
