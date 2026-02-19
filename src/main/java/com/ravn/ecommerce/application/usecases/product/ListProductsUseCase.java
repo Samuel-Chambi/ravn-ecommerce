@@ -1,11 +1,11 @@
-package com.ravn.ecommerce.application.useCases.product;
+package com.ravn.ecommerce.application.usecases.product;
 
 import com.ravn.ecommerce.application.dto.response.PagedProductResponse;
 import com.ravn.ecommerce.application.dto.response.ProductResponse;
 import com.ravn.ecommerce.application.repositories.CategoryRepository;
 import com.ravn.ecommerce.application.repositories.ProductRepository;
-import com.ravn.ecommerce.application.useCases.UseCase;
-import com.ravn.ecommerce.application.useCases.product.query.ListProductsQuery;
+import com.ravn.ecommerce.application.usecases.UseCase;
+import com.ravn.ecommerce.application.usecases.product.query.ListProductsQuery;
 import com.ravn.ecommerce.domain.exceptions.CategoryNotFoundException;
 import com.ravn.ecommerce.domain.model.product.Product;
 import lombok.RequiredArgsConstructor;

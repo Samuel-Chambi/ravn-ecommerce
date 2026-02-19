@@ -13,4 +13,6 @@ public interface LikeRepository {
     Optional<Like> findByUserIdAndProductId(Long userId, Long productId);
 
     List<Like> findAllByUserId(Long userId);
+
+    List<Like> findAllByProductId(Long productId);
 }

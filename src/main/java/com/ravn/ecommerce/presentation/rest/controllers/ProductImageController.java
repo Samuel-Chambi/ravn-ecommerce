@@ -1,15 +1,14 @@
 package com.ravn.ecommerce.presentation.rest.controllers;
 
 import com.ravn.ecommerce.application.dto.response.ProductImageResponse;
-import com.ravn.ecommerce.application.useCases.productImage.UploadProductImageUseCase;
-import com.ravn.ecommerce.application.useCases.productImage.DeleteProductImageUseCase;
-import com.ravn.ecommerce.application.useCases.productImage.GetProductImagesUseCase;
-import com.ravn.ecommerce.application.useCases.productImage.commands.DeleteProductImageCommand;
-import com.ravn.ecommerce.application.useCases.productImage.commands.UploadProductImageCommand;
+import com.ravn.ecommerce.application.usecases.productImage.UploadProductImageUseCase;
+import com.ravn.ecommerce.application.usecases.productImage.DeleteProductImageUseCase;
+import com.ravn.ecommerce.application.usecases.productImage.GetProductImagesUseCase;
+import com.ravn.ecommerce.application.usecases.productImage.commands.DeleteProductImageCommand;
+import com.ravn.ecommerce.application.usecases.productImage.commands.UploadProductImageCommand;
 import com.ravn.ecommerce.application.validation.ValidImageFiles;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

@@ -1,10 +1,10 @@
-package com.ravn.ecommerce.application.useCases.review;
+package com.ravn.ecommerce.application.usecases.review;
 
 import com.ravn.ecommerce.application.repositories.ProductRepository;
 import com.ravn.ecommerce.application.repositories.ReviewRepository;
 import com.ravn.ecommerce.application.repositories.UserRepository;
-import com.ravn.ecommerce.application.useCases.UseCase;
-import com.ravn.ecommerce.application.useCases.review.command.DeleteReviewCommand;
+import com.ravn.ecommerce.application.usecases.UseCase;
+import com.ravn.ecommerce.application.usecases.review.command.DeleteReviewCommand;
 import com.ravn.ecommerce.domain.exceptions.BusinessRuleViolation;
 import com.ravn.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ravn.ecommerce.domain.exceptions.ProductNotFound;

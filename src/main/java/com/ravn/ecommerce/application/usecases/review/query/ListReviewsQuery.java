@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.useCases.review.query;
+package com.ravn.ecommerce.application.usecases.review.query;
 
 public record ListReviewsQuery(
         String cursor,

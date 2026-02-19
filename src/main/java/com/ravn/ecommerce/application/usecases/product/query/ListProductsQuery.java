@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.useCases.product.query;
+package com.ravn.ecommerce.application.usecases.product.query;
 
 import org.springframework.data.domain.Sort;
 

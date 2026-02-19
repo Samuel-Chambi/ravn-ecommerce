@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.useCases.productImage.commands;
+package com.ravn.ecommerce.application.usecases.productImage.commands;
 
 import org.springframework.web.multipart.MultipartFile;
 

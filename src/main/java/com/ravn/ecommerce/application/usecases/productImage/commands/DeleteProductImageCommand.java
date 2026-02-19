@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.useCases.productImage.commands;
+package com.ravn.ecommerce.application.usecases.productImage.commands;
 
 public record DeleteProductImageCommand(
         Long productId,

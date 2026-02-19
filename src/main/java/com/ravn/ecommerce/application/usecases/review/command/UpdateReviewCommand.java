@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.useCases.review.command;
+package com.ravn.ecommerce.application.usecases.review.command;
 
 import com.ravn.ecommerce.application.dto.request.review.UpdateReviewRequest;
 

@@ -1,8 +1,8 @@
-package com.ravn.ecommerce.application.useCases.order;
+package com.ravn.ecommerce.application.usecases.order;
 
 import com.ravn.ecommerce.application.dto.response.OrderResponse;
 import com.ravn.ecommerce.application.repositories.OrderRepository;
-import com.ravn.ecommerce.application.useCases.UseCase;
+import com.ravn.ecommerce.application.usecases.UseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

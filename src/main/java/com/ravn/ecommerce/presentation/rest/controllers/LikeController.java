@@ -2,10 +2,10 @@ package com.ravn.ecommerce.presentation.rest.controllers;
 
 import com.ravn.ecommerce.application.dto.response.PagedProductResponse;
 import com.ravn.ecommerce.application.services.CurrentUserService;
-import com.ravn.ecommerce.application.useCases.like.DislikeProductUseCase;
-import com.ravn.ecommerce.application.useCases.like.GetLikedProductsUseCase;
-import com.ravn.ecommerce.application.useCases.like.LikeProductUseCase;
-import com.ravn.ecommerce.application.useCases.like.command.SwitchLikeProductCommand;
+import com.ravn.ecommerce.application.usecases.like.DislikeProductUseCase;
+import com.ravn.ecommerce.application.usecases.like.GetLikedProductsUseCase;
+import com.ravn.ecommerce.application.usecases.like.LikeProductUseCase;
+import com.ravn.ecommerce.application.usecases.like.command.SwitchLikeProductCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

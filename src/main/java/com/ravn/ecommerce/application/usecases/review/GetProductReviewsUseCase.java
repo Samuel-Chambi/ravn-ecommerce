@@ -1,11 +1,11 @@
-package com.ravn.ecommerce.application.useCases.review;
+package com.ravn.ecommerce.application.usecases.review;
 
 import com.ravn.ecommerce.application.dto.response.PagedReviewResponse;
 import com.ravn.ecommerce.application.dto.response.ReviewResponse;
 import com.ravn.ecommerce.application.repositories.ProductRepository;
 import com.ravn.ecommerce.application.repositories.ReviewRepository;
-import com.ravn.ecommerce.application.useCases.UseCase;
-import com.ravn.ecommerce.application.useCases.review.query.ListReviewsQuery;
+import com.ravn.ecommerce.application.usecases.UseCase;
+import com.ravn.ecommerce.application.usecases.review.query.ListReviewsQuery;
 import com.ravn.ecommerce.domain.exceptions.ProductNotFound;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

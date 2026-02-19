@@ -5,12 +5,11 @@ import com.ravn.ecommerce.application.dto.request.category.UpdateCategoryRequest
 import com.ravn.ecommerce.application.dto.response.CategoryResponse;
 import com.ravn.ecommerce.application.dto.response.PagedCategoryResponse;
 import com.ravn.ecommerce.application.services.CurrentUserService;
-import com.ravn.ecommerce.application.useCases.category.*;
-import com.ravn.ecommerce.application.useCases.category.command.CreateCategoryCommand;
-import com.ravn.ecommerce.application.useCases.category.command.DeleteCategoryCommand;
-import com.ravn.ecommerce.application.useCases.category.command.UpdateCategoryCommand;
-import com.ravn.ecommerce.application.useCases.category.query.ListCategoriesQuery;
-import com.ravn.ecommerce.domain.model.product.Category;
+import com.ravn.ecommerce.application.usecases.category.*;
+import com.ravn.ecommerce.application.usecases.category.command.CreateCategoryCommand;
+import com.ravn.ecommerce.application.usecases.category.command.DeleteCategoryCommand;
+import com.ravn.ecommerce.application.usecases.category.command.UpdateCategoryCommand;
+import com.ravn.ecommerce.application.usecases.category.query.ListCategoriesQuery;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

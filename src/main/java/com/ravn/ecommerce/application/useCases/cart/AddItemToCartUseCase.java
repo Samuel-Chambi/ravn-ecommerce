@@ -1,12 +1,12 @@
-package com.ravn.ecommerce.application.useCases.cart;
+package com.ravn.ecommerce.application.usecases.cart;
 
 import com.ravn.ecommerce.application.dto.response.CartResponse;
 import com.ravn.ecommerce.application.repositories.CartItemRepository;
 import com.ravn.ecommerce.application.repositories.CartRepository;
 import com.ravn.ecommerce.application.repositories.ProductRepository;
 import com.ravn.ecommerce.application.repositories.UserRepository;
-import com.ravn.ecommerce.application.useCases.UseCase;
-import com.ravn.ecommerce.application.useCases.cart.command.AddItemToCartCommand;
+import com.ravn.ecommerce.application.usecases.UseCase;
+import com.ravn.ecommerce.application.usecases.cart.command.AddItemToCartCommand;
 import com.ravn.ecommerce.domain.exceptions.ProductNotFound;
 import com.ravn.ecommerce.domain.exceptions.UserNotFound;
 import com.ravn.ecommerce.domain.model.cart.Cart;

@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.useCases.order.command;
+package com.ravn.ecommerce.application.usecases.order.command;
 
 public record GetUserOrderByIdCommand(
         Long userId,

@@ -1,9 +1,9 @@
-package com.ravn.ecommerce.application.useCases.productImage;
+package com.ravn.ecommerce.application.usecases.productImage;
 
 import com.ravn.ecommerce.application.repositories.ProductImageRepository;
 import com.ravn.ecommerce.application.services.ImageStorageService;
-import com.ravn.ecommerce.application.useCases.UseCase;
-import com.ravn.ecommerce.application.useCases.productImage.commands.DeleteProductImageCommand;
+import com.ravn.ecommerce.application.usecases.UseCase;
+import com.ravn.ecommerce.application.usecases.productImage.commands.DeleteProductImageCommand;
 import com.ravn.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ravn.ecommerce.domain.model.product.ProductImage;
 import lombok.RequiredArgsConstructor;

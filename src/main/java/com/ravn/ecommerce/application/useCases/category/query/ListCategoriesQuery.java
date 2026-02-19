@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.useCases.category.query;
+package com.ravn.ecommerce.application.usecases.category.query;
 
 public record ListCategoriesQuery(
         String cursor,

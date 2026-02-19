@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.useCases.cart.command;
+package com.ravn.ecommerce.application.usecases.cart.command;
 
 import com.ravn.ecommerce.domain.exceptions.InvalidCartLogicException;
 

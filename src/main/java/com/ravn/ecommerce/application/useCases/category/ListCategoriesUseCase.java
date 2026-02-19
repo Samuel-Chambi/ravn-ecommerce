@@ -1,11 +1,10 @@
-package com.ravn.ecommerce.application.useCases.category;
+package com.ravn.ecommerce.application.usecases.category;
 
 import com.ravn.ecommerce.application.dto.response.CategoryResponse;
 import com.ravn.ecommerce.application.dto.response.PagedCategoryResponse;
 import com.ravn.ecommerce.application.repositories.CategoryRepository;
-import com.ravn.ecommerce.application.useCases.UseCase;
-import com.ravn.ecommerce.application.useCases.category.query.ListCategoriesQuery;
-import lombok.NoArgsConstructor;
+import com.ravn.ecommerce.application.usecases.UseCase;
+import com.ravn.ecommerce.application.usecases.category.query.ListCategoriesQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.KeysetScrollPosition;

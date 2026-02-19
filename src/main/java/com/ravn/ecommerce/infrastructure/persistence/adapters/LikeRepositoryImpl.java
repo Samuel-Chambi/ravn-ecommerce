@@ -46,4 +46,11 @@ public class LikeRepositoryImpl implements LikeRepository {
                 .map(mapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<Like> findAllByProductId(Long productId) {
+        return jpaRepository.findAllByProductId(productId).stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
 }

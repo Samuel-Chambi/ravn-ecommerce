@@ -9,8 +9,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "products")
-@Data
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductJpaEntity {
@@ -28,7 +28,7 @@ public class ProductJpaEntity {
     private BigDecimal price;
 
     @Column(name = "is_enabled", nullable = false)
-    private boolean isEnabled = true;
+    private boolean isEnabled;
 
     @Column(name = "category_id")
     private Long categoryId;
@@ -49,11 +49,4 @@ public class ProductJpaEntity {
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
     @ToString.Exclude
     private InventoryJpaEntity inventory;
-
-    @PrePersist
-    protected void onCreate() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-    }
 }

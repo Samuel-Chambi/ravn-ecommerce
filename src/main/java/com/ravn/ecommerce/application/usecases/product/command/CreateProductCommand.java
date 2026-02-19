@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.useCases.product.command;
+package com.ravn.ecommerce.application.usecases.product.command;
 
 import com.ravn.ecommerce.application.dto.request.product.ProductRequest;
 

@@ -1,10 +1,10 @@
-package com.ravn.ecommerce.application.useCases.order;
+package com.ravn.ecommerce.application.usecases.order;
 
 import com.ravn.ecommerce.application.dto.response.OrderResponse;
 import com.ravn.ecommerce.application.repositories.OrderRepository;
 import com.ravn.ecommerce.application.repositories.UserRepository;
-import com.ravn.ecommerce.application.useCases.UseCase;
-import com.ravn.ecommerce.application.useCases.order.command.GetUserOrderByIdCommand;
+import com.ravn.ecommerce.application.usecases.UseCase;
+import com.ravn.ecommerce.application.usecases.order.command.GetUserOrderByIdCommand;
 import com.ravn.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ravn.ecommerce.domain.exceptions.UserNotFound;
 import lombok.RequiredArgsConstructor;

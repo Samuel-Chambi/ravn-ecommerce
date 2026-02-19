@@ -1,11 +1,11 @@
-package com.ravn.ecommerce.application.useCases.productImage;
+package com.ravn.ecommerce.application.usecases.productImage;
 
 import com.ravn.ecommerce.application.dto.response.ProductImageResponse;
 import com.ravn.ecommerce.application.repositories.ProductImageRepository;
 import com.ravn.ecommerce.application.repositories.ProductRepository;
 import com.ravn.ecommerce.application.services.ImageStorageService;
-import com.ravn.ecommerce.application.useCases.UseCase;
-import com.ravn.ecommerce.application.useCases.productImage.commands.UploadProductImageCommand;
+import com.ravn.ecommerce.application.usecases.UseCase;
+import com.ravn.ecommerce.application.usecases.productImage.commands.UploadProductImageCommand;
 import com.ravn.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ravn.ecommerce.domain.exceptions.InvalidOperationException;
 import com.ravn.ecommerce.domain.model.product.ProductImage;

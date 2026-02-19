@@ -1,11 +1,11 @@
-package com.ravn.ecommerce.application.useCases.like;
+package com.ravn.ecommerce.application.usecases.like;
 
 import com.ravn.ecommerce.application.dto.response.PagedProductResponse;
 import com.ravn.ecommerce.application.dto.response.ProductResponse;
 import com.ravn.ecommerce.application.repositories.LikeRepository;
 import com.ravn.ecommerce.application.repositories.ProductRepository;
 import com.ravn.ecommerce.application.repositories.UserRepository;
-import com.ravn.ecommerce.application.useCases.UseCase;
+import com.ravn.ecommerce.application.usecases.UseCase;
 import com.ravn.ecommerce.domain.exceptions.UserNotFound;
 import com.ravn.ecommerce.domain.model.product.Like;
 import com.ravn.ecommerce.domain.model.product.Product;

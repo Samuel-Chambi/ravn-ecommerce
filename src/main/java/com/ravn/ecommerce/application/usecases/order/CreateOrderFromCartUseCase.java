@@ -1,11 +1,11 @@
-package com.ravn.ecommerce.application.useCases.order;
+package com.ravn.ecommerce.application.usecases.order;
 
 import com.ravn.ecommerce.application.dto.response.OrderResponse;
 import com.ravn.ecommerce.application.repositories.CartRepository;
 import com.ravn.ecommerce.application.repositories.OrderRepository;
 import com.ravn.ecommerce.application.repositories.ProductRepository;
 import com.ravn.ecommerce.application.repositories.UserRepository;
-import com.ravn.ecommerce.application.useCases.UseCase;
+import com.ravn.ecommerce.application.usecases.UseCase;
 import com.ravn.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ravn.ecommerce.domain.exceptions.InvalidOrderException;
 import com.ravn.ecommerce.domain.exceptions.UserNotFound;
@@ -20,9 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
