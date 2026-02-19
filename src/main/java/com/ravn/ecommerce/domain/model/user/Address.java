@@ -1,8 +1,15 @@
 package com.ravn.ecommerce.domain.model.user;
 
+import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Address {
     private Long id;
     private Long userId;
@@ -15,23 +22,8 @@ public class Address {
     private String zipCode;
     private boolean isDefault;
     private LocalDateTime createdAt;
-
-    public Address(Long id, Long userId, String fullName, String phone, String street, String city, String state, String country, String zipCode, boolean isDefault, LocalDateTime createdAt) {
-        this.id = id;
-        this.userId = userId;
-        this.fullName = fullName;
-        this.phone = phone;
-        this.street = street;
-        this.city = city;
-        this.state = state;
-        this.country = country;
-        this.zipCode = zipCode;
-        this.isDefault = isDefault;
-        this.createdAt = createdAt;
-    }
-
-    protected Address() {
-    }
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 
     public void setAsDefault() {
         this.isDefault = true;
@@ -47,51 +39,6 @@ public class Address {
                 city != null && !city.isEmpty() &&
                 country != null && !country.isEmpty() &&
                 zipCode != null && !zipCode.isEmpty();
-    }
-
-    // Getters
-    public Long getId() {
-        return id;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public String getZipCode() {
-        return zipCode;
-    }
-
-    public boolean isDefault() {
-        return isDefault;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
     }
 
     @Override
