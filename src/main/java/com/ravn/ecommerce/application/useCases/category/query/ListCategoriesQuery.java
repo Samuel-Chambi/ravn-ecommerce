@@ -6,7 +6,7 @@ public record ListCategoriesQuery(
 ) {
     public ListCategoriesQuery {
         if (limit <= 0 || limit > 100) {
-            throw new IllegalArgumentException("Limit must be between 1 and 100");
+            throw new IllegalArgumentException("Limit value must be between 1 and 100");
         }
     }
 
