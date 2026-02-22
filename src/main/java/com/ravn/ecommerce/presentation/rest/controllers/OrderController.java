@@ -1,8 +1,9 @@
 package com.ravn.ecommerce.presentation.rest.controllers;
 
 import com.ravn.ecommerce.application.dto.response.OrderResponse;
-import com.ravn.ecommerce.application.useCases.order.*;
-import com.ravn.ecommerce.application.useCases.order.command.GetUserOrderByIdCommand;
+import com.ravn.ecommerce.application.services.CurrentUserService;
+import com.ravn.ecommerce.application.usecases.order.*;
+import com.ravn.ecommerce.application.usecases.order.command.GetUserOrderByIdCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,48 +13,51 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/orders")
 public class OrderController {
+
     private final GetUserOrdersUseCase getUserOrdersUseCase;
     private final GetUserOrderByIdUseCase getUserOrderByIdUseCase;
     private final CancelUserOrderUseCase cancelUserOrderUseCase;
     private final GetAllOrdersUseCase getAllOrdersUseCase;
     private final GetOrderByIdUseCase getOrderByIdUseCase;
     private final CancelOrderUseCase cancelOrderUseCase;
+    private final CurrentUserService currentUserService;
 
+    // ── User-scoped (CLIENT + MANAGER) ──────────────────────────────────────
 
-
-    @GetMapping("/users/{userId}/orders")
-    public ResponseEntity<List<OrderResponse>> getUserOrders(@PathVariable Long userId) {
+    @GetMapping("/me")
+    public ResponseEntity<List<OrderResponse>> getMyOrders() {
+        Long userId = currentUserService.getCurrentUserId();
         return ResponseEntity.ok(getUserOrdersUseCase.execute(userId));
     }
 
-    @GetMapping("/users/{userId}/orders/{orderId}")
-    public ResponseEntity<OrderResponse> getUserOrderById(
-            @PathVariable Long userId,
-            @PathVariable Long orderId) {
+    @GetMapping("/me/{orderId}")
+    public ResponseEntity<OrderResponse> getMyOrderById(@PathVariable Long orderId) {
+        Long userId = currentUserService.getCurrentUserId();
         return ResponseEntity.ok(getUserOrderByIdUseCase.execute(new GetUserOrderByIdCommand(userId, orderId)));
     }
 
-    @PatchMapping("/users/{userId}/orders/{orderId}")
-    public ResponseEntity<Void> cancelUserOrder(
-            @PathVariable Long userId,
-            @PathVariable Long orderId) {
+    @PatchMapping("/me/{orderId}/cancel")
+    public ResponseEntity<Void> cancelMyOrder(@PathVariable Long orderId) {
+        Long userId = currentUserService.getCurrentUserId();
         cancelUserOrderUseCase.execute(new GetUserOrderByIdCommand(userId, orderId));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    // ── Manager-only ─────────────────────────────────────────────────────────
 
-    @GetMapping("/orders")
+    @GetMapping
     public ResponseEntity<List<OrderResponse>> getAllOrders() {
         return ResponseEntity.ok(getAllOrdersUseCase.execute(null));
     }
 
-    @GetMapping("/orders/{orderId}")
+    @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long orderId) {
         return ResponseEntity.ok(getOrderByIdUseCase.execute(orderId));
     }
 
-    @PatchMapping("/orders/{orderId}")
+    @PatchMapping("/orders/{orderId}/cancel")
     public ResponseEntity<Void> cancelOrder(@PathVariable Long orderId) {
         cancelOrderUseCase.execute(orderId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

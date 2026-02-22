@@ -12,4 +12,6 @@ public interface LikeJpaRepository extends JpaRepository<LikeJpaEntity, Long> {
     Optional<LikeJpaEntity> findByUserIdAndProductId(Long userId, Long productId);
 
     List<LikeJpaEntity> findAllByUserId(Long userId);
+
+    List<LikeJpaEntity> findAllByProductId(Long productId);
 }

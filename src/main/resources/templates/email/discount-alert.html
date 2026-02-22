@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{email/base :: layout(~{::content})}">
+
+<body>
+    <div th:fragment="content">
+        <h2>🎉 Your Liked Item is On Sale!</h2>
+        <p>Hello <span th:text="${email}">User</span>,</p>
+        <p>Great news! <strong th:text="${productName}">Product</strong> is now on sale:</p>
+        <table style="margin: 16px 0;">
+            <tr>
+                <td style="padding: 4px 12px 4px 0; color: #888;">Original price:</td>
+                <td style="text-decoration: line-through; color: #888;">$<span
+                        th:text="${#numbers.formatDecimal(oldPrice, 1, 2)}">40.00</span></td>
+            </tr>
+            <tr>
+                <td style="padding: 4px 12px 4px 0;">New price:</td>
+                <td style="font-size: 1.3em; font-weight: bold; color: #4CAF50;">$<span
+                        th:text="${#numbers.formatDecimal(newPrice, 1, 2)}">30.00</span></td>
+            </tr>
+            <tr>
+                <td style="padding: 4px 12px 4px 0;">You save:</td>
+                <td><span th:text="${savingsPct}">25</span>% off!</td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>

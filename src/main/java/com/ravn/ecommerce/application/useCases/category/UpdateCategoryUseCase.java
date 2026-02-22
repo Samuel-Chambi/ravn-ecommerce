@@ -1,13 +1,12 @@
-package com.ravn.ecommerce.application.useCases.category;
+package com.ravn.ecommerce.application.usecases.category;
 
 import com.ravn.ecommerce.application.dto.request.category.UpdateCategoryRequest;
 import com.ravn.ecommerce.application.dto.response.CategoryResponse;
 import com.ravn.ecommerce.application.repositories.CategoryRepository;
 import com.ravn.ecommerce.application.repositories.UserRepository;
-import com.ravn.ecommerce.application.useCases.UseCase;
-import com.ravn.ecommerce.application.useCases.category.command.UpdateCategoryCommand;
+import com.ravn.ecommerce.application.usecases.UseCase;
+import com.ravn.ecommerce.application.usecases.category.command.UpdateCategoryCommand;
 import com.ravn.ecommerce.domain.exceptions.CategoryNotFoundException;
-import com.ravn.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ravn.ecommerce.domain.exceptions.UnauthorizedException;
 import com.ravn.ecommerce.domain.exceptions.UserNotFound;
 import com.ravn.ecommerce.domain.model.product.Category;

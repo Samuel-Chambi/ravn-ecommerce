@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{email/base :: layout(~{::content})}">
+<body>
+    <div th:fragment="content">
+        <h2>Order Status Update</h2>
+        <p>Hello <span th:text="${email}">User</span>,</p>
+        <p>Your order <strong>#<span th:text="${orderId}">12345</span></strong> status has been updated to:</p>
+        <p style="font-size: 1.4em; font-weight: bold; color: #4CAF50;" th:text="${statusLabel}">Status</p>
+        <p>If you have any questions, please contact our support team.</p>
+    </div>
+</body>
+</html>

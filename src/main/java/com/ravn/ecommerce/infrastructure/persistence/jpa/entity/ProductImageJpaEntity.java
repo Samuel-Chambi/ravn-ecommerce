@@ -26,14 +26,5 @@ public class ProductImageJpaEntity {
     private Boolean isPrimary;
     @Column(name = "created_at" , nullable = false)
     private LocalDateTime createdAt;
-
-    protected void onCreate() {
-        if(createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-        if(isPrimary == null) {
-            isPrimary = false;
-        }
-    }
 }
 

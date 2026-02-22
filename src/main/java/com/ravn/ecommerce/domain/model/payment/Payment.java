@@ -11,7 +11,7 @@ public class Payment {
     private BigDecimal amount;
     private PaymentStatus status;
     private LocalDateTime createdAt;
-
+    private LocalDateTime updatedAt;
     public Payment() {
     }
 

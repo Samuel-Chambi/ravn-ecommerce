@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.useCases.product.command;
+package com.ravn.ecommerce.application.usecases.product.command;
 
 public record SwitchEnabledCommand(
         Long userId,

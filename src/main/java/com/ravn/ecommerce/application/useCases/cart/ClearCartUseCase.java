@@ -1,8 +1,8 @@
-package com.ravn.ecommerce.application.useCases.cart;
+package com.ravn.ecommerce.application.usecases.cart;
 
 import com.ravn.ecommerce.application.repositories.CartRepository;
 import com.ravn.ecommerce.application.repositories.UserRepository;
-import com.ravn.ecommerce.application.useCases.UseCase;
+import com.ravn.ecommerce.application.usecases.UseCase;
 import com.ravn.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ravn.ecommerce.domain.exceptions.UserNotFound;
 import com.ravn.ecommerce.domain.model.cart.Cart;

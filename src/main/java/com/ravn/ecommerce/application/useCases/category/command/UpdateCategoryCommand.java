@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.useCases.category.command;
+package com.ravn.ecommerce.application.usecases.category.command;
 
 import com.ravn.ecommerce.application.dto.request.category.UpdateCategoryRequest;
 

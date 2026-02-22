@@ -8,7 +8,7 @@ app:
     allowed-headers: ${CORS_ALLOWED_HEADERS:*}
 
   email:
-    enabled: false
+    enabled: true
     from: ${EMAIL_FROM:noreply@ecommerce.com}
     host: ${EMAIL_HOST:localhost}
     port: ${EMAIL_PORT:587}
@@ -32,6 +32,18 @@ app:
     webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_xxxxx}
 
 spring:
+  mail:
+    host: ${EMAIL_HOST:smtp.gmail.com}
+    port: ${EMAIL_PORT:587}
+    username: ${EMAIL_USERNAME:samuelchy21@gmail.com}
+    password: ${EMAIL_PASSWORD:vvug zmec bkqc vfne}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
   application:
     name: ecommerce-api
 

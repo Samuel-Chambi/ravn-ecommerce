@@ -1,11 +1,10 @@
-package com.ravn.ecommerce.application.useCases.category;
+package com.ravn.ecommerce.application.usecases.category;
 
-import com.ravn.ecommerce.application.dto.request.category.CreateCategoryRequest;
 import com.ravn.ecommerce.application.dto.response.CategoryResponse;
 import com.ravn.ecommerce.application.repositories.CategoryRepository;
 import com.ravn.ecommerce.application.repositories.UserRepository;
-import com.ravn.ecommerce.application.useCases.UseCase;
-import com.ravn.ecommerce.application.useCases.category.command.CreateCategoryCommand;
+import com.ravn.ecommerce.application.usecases.UseCase;
+import com.ravn.ecommerce.application.usecases.category.command.CreateCategoryCommand;
 import com.ravn.ecommerce.domain.exceptions.UnauthorizedException;
 import com.ravn.ecommerce.domain.model.product.Category;
 import com.ravn.ecommerce.domain.model.user.User;

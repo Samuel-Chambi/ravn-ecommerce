@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.useCases.category.command;
+package com.ravn.ecommerce.application.usecases.category.command;
 
 public record DeleteCategoryCommand(
         Long categoryId,

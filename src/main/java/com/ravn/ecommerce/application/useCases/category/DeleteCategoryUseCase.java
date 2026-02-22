@@ -1,9 +1,9 @@
-package com.ravn.ecommerce.application.useCases.category;
+package com.ravn.ecommerce.application.usecases.category;
 
 import com.ravn.ecommerce.application.repositories.CategoryRepository;
 import com.ravn.ecommerce.application.repositories.UserRepository;
-import com.ravn.ecommerce.application.useCases.UseCase;
-import com.ravn.ecommerce.application.useCases.category.command.DeleteCategoryCommand;
+import com.ravn.ecommerce.application.usecases.UseCase;
+import com.ravn.ecommerce.application.usecases.category.command.DeleteCategoryCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
