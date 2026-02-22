@@ -1,20 +1,21 @@
 package com.ravn.ecommerce.domain.model.product;
 
+import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class Category {
     private Long id;
     private String name;
     private boolean isActive;
-
-    public Category() {
-    }
-
-    public Category(Long id, String name, boolean isActive) {
-        this.id = id;
-        this.name = name;
-        this.isActive = isActive;
-    }
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
 
     public void activate() {
@@ -23,30 +24,6 @@ public class Category {
 
     public void deactivate() {
         this.isActive = false;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     @Override

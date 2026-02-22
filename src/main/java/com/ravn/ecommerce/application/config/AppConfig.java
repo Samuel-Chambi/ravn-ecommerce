@@ -40,17 +40,11 @@ public class AppConfig {
     @Getter
     @Setter
     public static class EmailConfig {
-        @NotBlank(message = "Email from address cannot be blank")
-        @Email(message = "Email from must be a valid email address")
+        private boolean enabled = true;
         private String from;
-        @NotBlank(message = "Email host cannot be blank")
         private String host;
-        @Min(value = 1, message = "Email port must be positive")
-        @Max(value = 65535, message = "Email port must be valid")
         private Integer port;
-        @NotBlank(message = "Email username cannot be blank")
         private String username;
-        @NotBlank(message = "Email password cannot be blank")
         private String password;
     }
 

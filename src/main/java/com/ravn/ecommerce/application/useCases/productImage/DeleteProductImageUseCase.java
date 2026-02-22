@@ -1,7 +1,9 @@
-package com.ravn.ecommerce.application.useCases.product;
+package com.ravn.ecommerce.application.useCases.productImage;
 
 import com.ravn.ecommerce.application.repositories.ProductImageRepository;
 import com.ravn.ecommerce.application.services.ImageStorageService;
+import com.ravn.ecommerce.application.useCases.UseCase;
+import com.ravn.ecommerce.application.useCases.productImage.commands.DeleteProductImageCommand;
 import com.ravn.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ravn.ecommerce.domain.model.product.ProductImage;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +21,15 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class DeleteProductImagesUseCase {
+public class DeleteProductImageUseCase implements UseCase<DeleteProductImageCommand, Void> {
     private final ProductImageRepository productImageRepository;
     private final ImageStorageService imageStorageService;
 
     @Transactional
-    public void execute(Long productId, Long imageId) {
+    @Override
+    public Void execute(DeleteProductImageCommand command) {
+        Long imageId = command.imageId();
+        Long productId = command.productId();
         log.info("Deleting image {} to product {}", imageId, productId);
 
         // Verify image exists and belongs to product
@@ -59,5 +64,6 @@ public class DeleteProductImagesUseCase {
         }
 
         log.info("Successfully deleted image {} for product {}", imageId, productId);
+        return null;
     }
 }

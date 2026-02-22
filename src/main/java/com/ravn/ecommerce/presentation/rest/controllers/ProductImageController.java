@@ -1,9 +1,11 @@
 package com.ravn.ecommerce.presentation.rest.controllers;
 
 import com.ravn.ecommerce.application.dto.response.ProductImageResponse;
-import com.ravn.ecommerce.application.useCases.product.DeleteProductImagesUseCase;
-import com.ravn.ecommerce.application.useCases.product.GetProductImagesUseCase;
-import com.ravn.ecommerce.application.useCases.product.UploadProductImageUseCase;
+import com.ravn.ecommerce.application.useCases.productImage.UploadProductImageUseCase;
+import com.ravn.ecommerce.application.useCases.productImage.DeleteProductImageUseCase;
+import com.ravn.ecommerce.application.useCases.productImage.GetProductImagesUseCase;
+import com.ravn.ecommerce.application.useCases.productImage.commands.DeleteProductImageCommand;
+import com.ravn.ecommerce.application.useCases.productImage.commands.UploadProductImageCommand;
 import com.ravn.ecommerce.application.validation.ValidImageFiles;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,7 @@ import java.util.List;
 public class ProductImageController {
     private final UploadProductImageUseCase uploadProductImageUseCase;
     private final GetProductImagesUseCase getProductImagesUseCase;
-    private final DeleteProductImagesUseCase deleteProductImagesUseCase;
+    private final DeleteProductImageUseCase deleteProductImageUseCase;
 
     @GetMapping
     public ResponseEntity<List<ProductImageResponse>> getProductImages(@PathVariable Long productId) {
@@ -36,11 +38,11 @@ public class ProductImageController {
             @PathVariable Long productId,
             @RequestParam("images") @NotEmpty @ValidImageFiles List<MultipartFile> files,
             @RequestParam(value = "markFirstAsPrimary", required = false, defaultValue = "true") Boolean markFirstAsPrimary) {
-        List<ProductImageResponse> uploadedImages = uploadProductImageUseCase.execute(
+        List<ProductImageResponse> uploadedImages = uploadProductImageUseCase.execute(new UploadProductImageCommand(
                 productId,
                 files,
-                markFirstAsPrimary);
-
+                markFirstAsPrimary
+        ));
         return ResponseEntity.status(HttpStatus.CREATED).body(uploadedImages);
     }
 
@@ -49,7 +51,8 @@ public class ProductImageController {
     public ResponseEntity<Void> deleteImage(
             @PathVariable Long productId,
             @PathVariable Long imageId) {
-        deleteProductImagesUseCase.execute(productId, imageId);
+        DeleteProductImageCommand command = new DeleteProductImageCommand(productId, imageId);
+        deleteProductImageUseCase.execute(command);
         return ResponseEntity.noContent().build();
     }
 }

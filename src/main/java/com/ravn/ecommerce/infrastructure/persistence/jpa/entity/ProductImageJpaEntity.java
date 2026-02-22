@@ -18,7 +18,7 @@ public class ProductImageJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "product_id" , nullable = false)
+    @Column(name = "product_id", nullable = false, insertable = false, updatable = false)
     private Long productId;
     @Column(name = "image_url" , nullable = false , length = 500)
     private String imageUrl;
