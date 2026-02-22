@@ -1,7 +1,7 @@
 package com.ravn.ecommerce.domain.model.order;
 
-import com.ravn.ecommerce.domain.exceptions.InvalidOrderException;
 import com.ravn.ecommerce.domain.exceptions.InvalidOrderLogicException;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -9,28 +9,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Order {
     private Long id;
     private Long userId;
     private OrderStatus status;
     private BigDecimal totalAmount;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private Long shippingAddressId;
     private List<OrderItem> items;
-
-    public Order() {
-    }
-
-    public Order(Long id, Long userId, OrderStatus status, BigDecimal totalAmount,
-                 LocalDateTime createdAt, Long shippingAddressId) {
-        this.id = id;
-        this.userId = userId;
-        this.status = status;
-        this.totalAmount = totalAmount;
-        this.createdAt = createdAt;
-        this.shippingAddressId = shippingAddressId;
-        this.items = new ArrayList<>();
-    }
 
     public void markAsPaid() {
         if (this.status != OrderStatus.PENDING) {
