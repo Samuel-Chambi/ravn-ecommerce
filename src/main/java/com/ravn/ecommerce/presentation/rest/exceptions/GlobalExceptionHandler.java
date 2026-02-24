@@ -35,6 +35,19 @@ public class GlobalExceptionHandler {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
 
+        @ExceptionHandler(BusinessRuleViolation.class)
+        public ResponseEntity<ErrorResponse> handleBusinessRuleViolation(
+                        BusinessRuleViolation ex,
+                        HttpServletRequest request) {
+                log.warn("Business rule violation: {}", ex.getMessage());
+                ErrorResponse errorResponse = ErrorResponse.of(
+                                "Bad request",
+                                ex.getMessage(),
+                                ex.getErrorCode(),
+                                request.getRequestURI());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+
         @ExceptionHandler(DuplicateResourceException.class)
         public ResponseEntity<ErrorResponse> handleDuplicateResource(
                         DuplicateResourceException ex,
@@ -66,6 +79,19 @@ public class GlobalExceptionHandler {
                         InvalidOperationException ex,
                         HttpServletRequest request) {
                 log.warn("Invalid operation: {}", ex.getMessage());
+                ErrorResponse errorResponse = ErrorResponse.of(
+                                "Bad Request",
+                                ex.getMessage(),
+                                ex.getErrorCode(),
+                                request.getRequestURI());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+
+        @ExceptionHandler(DomainException.class)
+        public ResponseEntity<ErrorResponse> handleDomainException(
+                        DomainException ex,
+                        HttpServletRequest request) {
+                log.warn("Domain exception: {}", ex.getMessage());
                 ErrorResponse errorResponse = ErrorResponse.of(
                                 "Bad Request",
                                 ex.getMessage(),

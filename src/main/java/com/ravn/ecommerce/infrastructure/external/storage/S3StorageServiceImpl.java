@@ -147,10 +147,6 @@ public class S3StorageServiceImpl implements ImageStorageService {
     private String buildS3Url(String bucket, String key) {
         var s3Config = appConfig.getStorage().getS3();
 
-        if (s3Config.getEndpoint() != null && !s3Config.getEndpoint().isEmpty()) {
-            return String.format("%s/%s/%s", s3Config.getEndpoint(), bucket, key);
-        }
-
         return String.format("https://%s.s3.%s.amazonaws.com/%s",
                 bucket,
                 s3Config.getRegion(),
@@ -161,18 +157,9 @@ public class S3StorageServiceImpl implements ImageStorageService {
      * Extract S3 key from URL
      */
     private String extractKeyFromUrl(String fileUrl) {
-        // LocalStack: http://localhost:4566/bucket/products/file.jpg
-
-        if (fileUrl.contains("localhost:4566")) {
-            // LocalStack format
-            String[] parts = fileUrl.split("/");
-            // Skip protocol, host, port, and bucket name
-            return String.join("/", Arrays.copyOfRange(parts, 4, parts.length));
-        } else {
-            // AWS-S3 format
-            URI uri = URI.create(fileUrl);
-            return uri.getPath().substring(1); // Remove leading slash
-        }
+        // AWS-S3 format: https://bucket.s3.region.amazonaws.com/key
+        URI uri = URI.create(fileUrl);
+        return uri.getPath().substring(1); // Remove leading slash
     }
 
     // Get file extension
