@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,20 +31,19 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<PagedCategoryResponse> getAllCategories(
             @RequestParam(required = false, defaultValue = "") String cursor,
-            @RequestParam(required = false, defaultValue = "10") int limit
-    ) {
+            @RequestParam(required = false, defaultValue = "10") int limit) {
         ListCategoriesQuery query = new ListCategoriesQuery(cursor, limit);
         return ResponseEntity.ok(listCategoriesUseCase.execute(query));
     }
 
     @GetMapping("/{categoryId}")
     public ResponseEntity<CategoryResponse> getCategoryById(
-            @PathVariable Long categoryId
-    ) {
+            @PathVariable Long categoryId) {
         return ResponseEntity.ok(getCategoryByIdUseCase.execute(categoryId));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<CategoryResponse> createCategory(
             @RequestBody @Valid CreateCategoryRequest request) {
         Long userId = currentUserService.getCurrentUserId();
@@ -52,18 +52,20 @@ public class CategoryController {
     }
 
     @PutMapping("/{categoryId}")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<CategoryResponse> updateCategoryById(
             @RequestBody @Valid UpdateCategoryRequest request,
             @PathVariable Long categoryId) {
         Long userId = currentUserService.getCurrentUserId();
-        CategoryResponse response = updateCategoryUseCase.execute(new UpdateCategoryCommand(request, userId, categoryId));
+        CategoryResponse response = updateCategoryUseCase
+                .execute(new UpdateCategoryCommand(request, userId, categoryId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/{categoryId}")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Void> deleteCategoryById(
-            @PathVariable Long categoryId
-    ) {
+            @PathVariable Long categoryId) {
         Long userId = currentUserService.getCurrentUserId();
         DeleteCategoryCommand command = new DeleteCategoryCommand(categoryId, userId);
         deleteCategoryUseCase.execute(command);

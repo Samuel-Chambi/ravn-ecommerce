@@ -30,7 +30,8 @@ public class AuthController {
     private final ForgotPasswordUseCase forgotPasswordUseCase;
     private final ResetPasswordUseCase resetPasswordUseCase;
 
-    // In-memory rate limiter per IP: 3 requests per hour for forgot-password
+    // In-memory rate limiter per IP
+    // 3 requests per hour for forgot-password
     private final Map<String, Bucket> rateLimitBuckets = new ConcurrentHashMap<>();
 
     private Bucket getBucketForIp(String ip) {
@@ -52,8 +53,9 @@ public class AuthController {
     }
 
     @PostMapping("/signout")
-    public ResponseEntity<String> signOut() {
-        return ResponseEntity.status(HttpStatus.OK).body(signOutUseCase.execute(null));
+    public ResponseEntity<String> signOut(@RequestHeader("Authorization") String authHeader) {
+        signOutUseCase.execute(authHeader);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/forgot-password")

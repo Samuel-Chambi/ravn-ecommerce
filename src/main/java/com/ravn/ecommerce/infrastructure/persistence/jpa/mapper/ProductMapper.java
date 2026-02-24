@@ -37,6 +37,7 @@ public class ProductMapper implements Mapper<ProductJpaEntity , Product>{
                 .inventory(inventoryMapper.toDomain(entity.getInventory()))
                 .createdBy(entity.getCreatedBy())
                 .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
                 .build();
     }
     @Override
@@ -57,6 +58,7 @@ public class ProductMapper implements Mapper<ProductJpaEntity , Product>{
                 .images(imageEntities)
                 .createdBy(product.getCreatedBy())
                 .createdAt(product.getCreatedAt())
+                .updatedAt(product.getUpdatedAt())
                 .build();
         if (product.getInventory() != null) {
             InventoryJpaEntity inventoryEntity = inventoryMapper.toJpaEntity(product.getInventory());

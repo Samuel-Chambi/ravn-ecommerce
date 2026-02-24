@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,12 +31,14 @@ public class CartController {
     private final CurrentUserService currentUserService;
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CartResponse> getCurrentUserCart() {
         Long userId = currentUserService.getCurrentUserId();
         return ResponseEntity.ok(getCurrentUserCartUseCase.execute(userId));
     }
 
     @PostMapping("/items")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CartResponse> addProductToCart(
             @RequestBody @Valid AddToCartRequest request) {
         Long userId = currentUserService.getCurrentUserId();
@@ -44,12 +47,14 @@ public class CartController {
     }
 
     @PostMapping("/check-out")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<OrderResponse> createOrderFromCart() {
         Long userId = currentUserService.getCurrentUserId();
         return ResponseEntity.status(HttpStatus.CREATED).body(createOrderFromCartUseCase.execute(userId));
     }
 
     @DeleteMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> clearCurrentUserCart() {
         Long userId = currentUserService.getCurrentUserId();
         clearCartUseCase.execute(userId);
@@ -57,6 +62,7 @@ public class CartController {
     }
 
     @PutMapping("/items/{productId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CartResponse> updateItemQuantity(
             @PathVariable Long productId,
             @RequestBody @Valid UpdateItemQuantityRequest request) {
@@ -66,6 +72,7 @@ public class CartController {
     }
 
     @DeleteMapping("/items/{productId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CartResponse> removeItemFromCart(@PathVariable Long productId) {
         Long userId = currentUserService.getCurrentUserId();
         return ResponseEntity.ok(removeItemFromCartUseCase.execute(
