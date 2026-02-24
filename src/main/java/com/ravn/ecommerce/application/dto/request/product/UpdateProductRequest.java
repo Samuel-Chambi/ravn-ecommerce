@@ -33,7 +33,7 @@ public class UpdateProductRequest {
     private Integer stock;
 
     @Positive(message = "Category ID must be positive")
-    private Long categoryID;
+    private Long categoryId;
 
     private Boolean enabled;
 }
