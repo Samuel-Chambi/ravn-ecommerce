@@ -23,7 +23,11 @@ public class CartMapper implements Mapper<CartJpaEntity, Cart> {
                                 .userId(cartJpaEntity.getUserId())
                                 .status(cartJpaEntity.getStatus() == 1 ? CartStatus.ACTIVE : CartStatus.ORDERED)
                                 .total(cartJpaEntity.getCartItems() != null ? cartJpaEntity.getCartItems().stream()
-                                                .map(CartItemJpaEntity::getSubTotal)
+                                                .map((jpaEntity) -> {
+                                                        return jpaEntity.getPrice() != null ?
+                                                                jpaEntity.getPrice().multiply(BigDecimal.valueOf(jpaEntity.getQuantity()))
+                                                                : BigDecimal.ZERO;
+                                                })
                                                 .reduce(BigDecimal.ZERO, BigDecimal::add) : BigDecimal.ZERO)
                                 .items(cartJpaEntity.getCartItems() != null ? cartJpaEntity.getCartItems().stream()
                                                 .map(cartItemMapper::toDomain)

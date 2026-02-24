@@ -3,9 +3,13 @@ package com.ravn.ecommerce.infrastructure.persistence.jpa.repository;
 import com.ravn.ecommerce.infrastructure.persistence.jpa.entity.OrderJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.ScrollPosition;
+import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.Window;
 
 import java.util.List;
 import java.util.Optional;
+
 @Repository
 public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> {
     Optional<OrderJpaEntity> findById(Long id);
@@ -13,4 +17,8 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
     List<OrderJpaEntity> findByUserId(Long userId);
 
     Optional<OrderJpaEntity> findByIdAndUserId(Long id, Long userId);
+
+    Window<OrderJpaEntity> findByUserId(Long userId, ScrollPosition position, Limit limit);
+
+    Window<OrderJpaEntity> findAllBy(ScrollPosition position, Limit limit);
 }

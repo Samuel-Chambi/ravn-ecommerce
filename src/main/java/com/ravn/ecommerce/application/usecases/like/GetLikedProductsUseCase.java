@@ -1,7 +1,8 @@
 package com.ravn.ecommerce.application.usecases.like;
 
-import com.ravn.ecommerce.application.dto.response.PagedProductResponse;
 import com.ravn.ecommerce.application.dto.response.ProductResponse;
+import com.ravn.ecommerce.application.usecases.like.command.GetLikedProductsCommand;
+import org.springframework.data.domain.Window;
 import com.ravn.ecommerce.application.repositories.LikeRepository;
 import com.ravn.ecommerce.application.repositories.ProductRepository;
 import com.ravn.ecommerce.application.repositories.UserRepository;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class GetLikedProductsUseCase implements UseCase<Long, PagedProductResponse> {
+public class GetLikedProductsUseCase implements UseCase<GetLikedProductsCommand, Window<ProductResponse>> {
 
     private final LikeRepository likeRepository;
     private final ProductRepository productRepository;
@@ -28,39 +29,35 @@ public class GetLikedProductsUseCase implements UseCase<Long, PagedProductRespon
 
     @Override
     @Transactional(readOnly = true)
-    public PagedProductResponse execute(Long userId) {
-        log.info("Fetching liked products for user ID: {}", userId);
+    public Window<ProductResponse> execute(GetLikedProductsCommand command) {
+        log.info("Fetching liked products with cursor pagination for user ID: {}", command.userId());
 
-        if (!userRepository.existsById(userId)) {
-            throw new UserNotFound(String.format("User ID %d does not exist", userId));
+        if (!userRepository.existsById(command.userId())) {
+            throw new UserNotFound(String.format("User ID %d does not exist", command.userId()));
         }
 
-        List<Like> likes = likeRepository.findAllByUserId(userId);
+        Window<Like> likesWindow = likeRepository.findAllByUserId(
+                command.userId(),
+                command.position(),
+                command.limit());
 
-        if (likes.isEmpty()) {
-            return PagedProductResponse.builder()
-                    .products(List.of())
-                    .returnedCount(0)
-                    .hasNext(false)
-                    .nextCursor(null)
-                    .build();
+        if (likesWindow.isEmpty()) {
+            return Window.from(List.of(), (val) -> null);
         }
 
-        List<Long> productIds = likes.stream()
+        List<Long> productIds = likesWindow.getContent().stream()
                 .map(Like::getProductId)
                 .collect(Collectors.toList());
 
         List<Product> products = productRepository.findAllById(productIds);
 
-        List<ProductResponse> productResponses = products.stream()
-                .map(ProductResponse::toDto)
-                .collect(Collectors.toList());
-
-        return PagedProductResponse.builder()
-                .products(productResponses)
-                .returnedCount(productResponses.size())
-                .hasNext(false)
-                .nextCursor(null)
-                .build();
+        // Map Likes to ProductResponse preserving the Window characteristics
+        return likesWindow.map(like -> {
+            Product product = products.stream()
+                    .filter(p -> p.getId().equals(like.getProductId()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Product missing for like"));
+            return ProductResponse.toDto(product);
+        });
     }
 }

@@ -1,0 +1,211 @@
+# Scalars
+scalar BigDecimal
+scalar LocalDateTime
+
+# Enums
+enum OrderStatus {
+    PENDING
+    PAID
+    SHIPPED
+    DELIVERED
+    CANCELLED
+}
+
+# Types
+type OrderItem {
+    id: ID!
+    productName: String!
+    quantity: Int!
+    price: BigDecimal!
+    subTotal: BigDecimal!
+}
+
+type Order {
+    id: ID!
+    userId: ID!
+    status: OrderStatus!
+    total: BigDecimal!
+    items: [OrderItem!]!
+    createdAt: LocalDateTime!
+    updatedAt: LocalDateTime
+}
+
+type OrderConnection {
+    edges: [OrderEdge!]!
+    pageInfo: PageInfo!
+}
+
+type OrderEdge {
+    cursor: String!
+    node: Order!
+}
+
+type PageInfo {
+    hasPreviousPage: Boolean!
+    hasNextPage: Boolean!
+    startCursor: String
+    endCursor: String
+}
+
+type ProductConnection {
+    edges: [ProductEdge!]!
+    pageInfo: PageInfo!
+}
+
+type ProductEdge {
+    cursor: String!
+    node: Product!
+}
+
+type CartItem {
+    id: ID!
+    productId: ID!
+    productName: String!
+    quantity: Int!
+    price: BigDecimal!
+    subTotal: BigDecimal!
+    primaryImage: String
+}
+
+type Cart {
+    id: ID!
+    userId: ID!
+    items: [CartItem!]!
+    total: BigDecimal!
+}
+
+type Product {
+    id: ID!
+    name: String!
+    description: String
+    price: BigDecimal!
+    isEnabled: Boolean!
+    categoryId: ID!
+    stock: Int
+}
+
+# Inputs
+input AddToCartInput {
+    productId: ID!
+    quantity: Int!
+}
+
+input UpdateCartItemInput {
+    cartItemId: ID!
+    quantity: Int!
+}
+
+# Queries
+type Query {
+    """ CLIENT QUERIES """
+
+    """ 
+        Current authenticated user orders with cursor-based pagination
+    """
+    myOrders(first: Int = 10, after: String): OrderConnection!
+
+    """
+        Get a user order by ID
+    """
+    myOrderById(orderId: ID!): Order!
+
+    """ MANAGER QUERIES """
+
+    """
+        All ecommerce orders (MANAGER role only) with cursor-based pagination
+    """
+    allOrders(first: Int = 10, after: String): OrderConnection!
+
+    """
+        Get any order by ID (MANAGER role only)
+    """
+    orderById(orderId: ID!): Order!
+
+    """ AUTH-REQUIRED QUERIES """
+
+    """
+        Current authenticated user cart
+    """
+    myCart: Cart!
+
+    """
+        List of authenticated user's favorite products with cursor-based pagination
+    """
+    likedProducts(first: Int = 10, after: String): ProductConnection!
+}
+
+# Mutations
+type Mutation {
+    """ CART MUTATIONS """
+
+    """
+        Add item to authenticated user cart
+    """
+    addToCart(input: AddToCartInput!): Cart!
+
+    """
+        Update cart item
+    """
+    updateCartItem(input: UpdateCartItemInput!): Cart!
+
+    """
+        Delete cart item
+    """
+    removeFromCart(cartItemId: ID!): Cart!
+
+    """
+        Clean entire cart
+    """
+    clearCart: Boolean!
+
+    """ ORDER MUTATIONS (CLIENT) """
+
+    """
+        Create an order from cart
+    """
+    createOrderFromCart: Order!
+
+    """
+        Cancel a user's order
+    """
+    cancelUserOrderById(orderId: ID!): Boolean!
+
+    """ PRODUCT MANAGEMENT (MANAGER) """
+
+    """
+        Delete product (MANAGER only)
+    """
+    deleteProduct(productId: ID!): Boolean!
+
+    """
+        Disable product (MANAGER only)
+    """
+    disableProduct(productId: ID!): Product!
+
+    """
+        Enable product (MANAGER only)
+    """
+    enableProduct(productId: ID!): Product!
+
+    """
+        Update order status (MANAGER only)
+    """
+    updateDeliveryStatus(orderId: ID!, status: OrderStatus!): Order!
+
+    """
+        Cancel any order by ID (MANAGER only)
+    """
+    cancelOrderById(orderId: ID!): Boolean!
+
+    """ FAVORITES (CLIENT) """
+
+    """
+        Add product to user's favorites
+    """
+    likeProduct(productId: ID!): Boolean!
+
+    """
+        Remove product from user's favorites
+    """
+    unlikeProduct(productId: ID!): Boolean!
+}

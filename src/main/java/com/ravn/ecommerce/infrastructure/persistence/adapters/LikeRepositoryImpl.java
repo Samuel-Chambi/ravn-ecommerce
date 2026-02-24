@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.ScrollPosition;
+import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.Window;
 
 @Repository
 @RequiredArgsConstructor
@@ -45,6 +48,12 @@ public class LikeRepositoryImpl implements LikeRepository {
         return jpaRepository.findAllByUserId(userId).stream()
                 .map(mapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Window<Like> findAllByUserId(Long userId, ScrollPosition position, Limit limit) {
+        return jpaRepository.findByUserId(userId, position, limit)
+                .map(mapper::toDomain);
     }
 
     @Override

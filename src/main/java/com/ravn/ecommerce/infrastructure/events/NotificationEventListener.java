@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -62,6 +63,7 @@ public class NotificationEventListener {
 
     @Async
     @EventListener
+    @Transactional(readOnly = true)
     public void onLowStock(LowStockEvent event) {
         log.info("Sending low-stock alerts for product {}", event.getProductId());
         List<Like> likes = likeRepository.findAllByProductId(event.getProductId());
@@ -85,6 +87,7 @@ public class NotificationEventListener {
 
     @Async
     @EventListener
+    @Transactional(readOnly = true)
     public void onProductDiscounted(ProductDiscountedEvent event) {
         log.info("Sending discount alerts for product {}", event.getProductId());
         List<Like> likes = likeRepository.findAllByProductId(event.getProductId());

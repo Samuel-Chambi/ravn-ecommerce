@@ -25,8 +25,10 @@ public class CartItemJpaEntity {
     private Long cartId;
     @Column(name = "quantity")
     private Integer quantity;
-    @Column(name = "sub_total")
-    private BigDecimal subTotal;
+    @Column(name = "product_name")
+    private String productName;
+    @Column(name = "price")
+    private BigDecimal price;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")

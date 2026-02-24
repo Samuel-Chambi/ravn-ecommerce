@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,6 +20,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -34,6 +36,9 @@ public class SecurityConfig {
                         // Public endpoints
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/graphiql/**").permitAll()
+                        // GraphQL endpoint: security is enforced at method level via @PreAuthorize
+                        .requestMatchers("/graphql").permitAll()
                         .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
 
@@ -43,13 +48,21 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.PATCH, "/products/**").hasRole("MANAGER")
 
+                        // User-scoped (authenticated, CLIENT + MANAGER) routes MUST be defined before
+                        // more general /orders rules
+                        .requestMatchers("/orders/me/**").authenticated()
+                        .requestMatchers("/orders/me").authenticated()
+
                         // Manager-only: admin order management
                         .requestMatchers(HttpMethod.GET, "/orders").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.GET, "/orders/{orderId}").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.PATCH, "/orders/{orderId}/cancel").hasRole("MANAGER")
 
-                        // User-scoped (authenticated, CLIENT + MANAGER) — no userId in URL
-                        .requestMatchers("/orders/me/**").authenticated()
+                        // Stripe webhook — authenticated by Stripe-Signature header, not JWT
+                        .requestMatchers(HttpMethod.POST, "/payments/webhook").permitAll()
+
+                        // Other User-scoped services
+                        .requestMatchers("/payments/**").authenticated()
                         .requestMatchers("/addresses/**").authenticated()
                         .requestMatchers("/cart/**").authenticated()
                         .requestMatchers("/favorites/**").authenticated()

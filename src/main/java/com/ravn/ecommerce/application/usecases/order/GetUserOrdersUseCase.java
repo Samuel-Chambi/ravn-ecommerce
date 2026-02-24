@@ -11,21 +11,23 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import com.ravn.ecommerce.application.usecases.order.command.GetUserOrdersCommand;
+import org.springframework.data.domain.Window;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class GetUserOrdersUseCase implements UseCase<Long, List<OrderResponse>> {
+public class GetUserOrdersUseCase implements UseCase<GetUserOrdersCommand, Window<OrderResponse>> {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
 
     @Override
-    public List<OrderResponse> execute(Long userId) {
-        log.info("Fetching orders for user ID: {}", userId);
-        if (!userRepository.existsById(userId)) {
-            throw new UserNotFound(String.format("User ID %d does not exist", userId));
+    public Window<OrderResponse> execute(GetUserOrdersCommand command) {
+        log.info("Fetching orders for user ID: {}", command.userId());
+        if (!userRepository.existsById(command.userId())) {
+            throw new UserNotFound(String.format("User ID %d does not exist", command.userId()));
         }
-        return orderRepository.findAllByUserId(userId).stream()
-                .map(OrderResponse::toDto)
-                .toList();
+        return orderRepository.findAllByUserId(command.userId(), command.position(), command.limit())
+                .map(OrderResponse::toDto);
     }
 }

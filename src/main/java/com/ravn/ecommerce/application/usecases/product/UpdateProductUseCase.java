@@ -8,6 +8,7 @@ import com.ravn.ecommerce.application.repositories.UserRepository;
 import com.ravn.ecommerce.application.usecases.UseCase;
 import com.ravn.ecommerce.application.usecases.product.command.UpdateProductCommand;
 import com.ravn.ecommerce.domain.exceptions.*;
+import com.ravn.ecommerce.domain.model.product.Inventory;
 import com.ravn.ecommerce.domain.model.product.Product;
 import com.ravn.ecommerce.domain.model.product.events.LowStockEvent;
 import com.ravn.ecommerce.domain.model.product.events.ProductDiscountedEvent;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -70,10 +72,10 @@ public class UpdateProductUseCase implements UseCase<UpdateProductCommand, Produ
             }
         }
 
-        if (request.getCategoryID() != null) {
-            categoryRepository.findById(request.getCategoryID())
-                    .orElseThrow(() -> new CategoryNotFoundException(request.getCategoryID()));
-            product.setCategoryId(request.getCategoryID());
+        if (request.getCategoryId() != null) {
+            categoryRepository.findById(request.getCategoryId())
+                    .orElseThrow(() -> new CategoryNotFoundException(request.getCategoryId()));
+            product.setCategoryId(request.getCategoryId());
         }
 
         if (request.getEnabled() != null) {
@@ -83,7 +85,15 @@ public class UpdateProductUseCase implements UseCase<UpdateProductCommand, Produ
                 product.disable();
         }
 
-        if (request.getStock() != null && product.getInventory() != null) {
+        if (request.getStock() != null) {
+            if(product.getInventory() == null){
+                product.setInventory(
+                        Inventory.builder()
+                                .productId(product.getId())
+                                .updatedAt(LocalDateTime.now())
+                                .quantity(0)
+                                .build());
+            }
             product.getInventory().setQuantity(request.getStock());
 
             // Low stock alert (triggers only when dropping below threshold)
@@ -94,6 +104,7 @@ public class UpdateProductUseCase implements UseCase<UpdateProductCommand, Produ
             }
         }
 
+        product.setUpdatedAt(LocalDateTime.now());
         Product updated = productRepository.save(product);
         log.info("Product {} updated successfully", updated.getId());
 
