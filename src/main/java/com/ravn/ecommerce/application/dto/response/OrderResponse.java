@@ -23,11 +23,9 @@ public class OrderResponse {
     private Long shippingAddressId;
     private OrderStatus status;
     private BigDecimal total;
-    private List<OrderItemResponse> productOrderList;
+    private List<OrderItemResponse> items;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-
 
     public static OrderResponse toDto(Order order){
         return OrderResponse.builder()
@@ -36,7 +34,7 @@ public class OrderResponse {
                 .shippingAddressId(order.getShippingAddressId())
                 .status(order.getStatus())
                 .total(order.calculateTotal())
-                .productOrderList(order.getItems().stream()
+                .items(order.getItems().stream()
                         .map(OrderItemResponse::toDto)
                         .collect(Collectors.toCollection(ArrayList::new)))
                 .createdAt(order.getCreatedAt())

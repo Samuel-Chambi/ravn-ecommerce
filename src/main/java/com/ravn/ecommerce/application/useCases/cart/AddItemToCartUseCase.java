@@ -1,12 +1,13 @@
 package com.ravn.ecommerce.application.usecases.cart;
 
 import com.ravn.ecommerce.application.dto.response.CartResponse;
-import com.ravn.ecommerce.application.repositories.CartItemRepository;
 import com.ravn.ecommerce.application.repositories.CartRepository;
 import com.ravn.ecommerce.application.repositories.ProductRepository;
 import com.ravn.ecommerce.application.repositories.UserRepository;
 import com.ravn.ecommerce.application.usecases.UseCase;
 import com.ravn.ecommerce.application.usecases.cart.command.AddItemToCartCommand;
+import com.ravn.ecommerce.domain.exceptions.BusinessRuleViolation;
+import com.ravn.ecommerce.domain.exceptions.InsufficientStockException;
 import com.ravn.ecommerce.domain.exceptions.ProductNotFound;
 import com.ravn.ecommerce.domain.exceptions.UserNotFound;
 import com.ravn.ecommerce.domain.model.cart.Cart;
@@ -20,13 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class AddItemToCartUseCase implements UseCase<AddItemToCartCommand, CartResponse> {
     private final CartRepository cartRepository;
-    private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
@@ -36,16 +37,16 @@ public class AddItemToCartUseCase implements UseCase<AddItemToCartCommand, CartR
         Long userId = command.userId();
         Long productId = command.productId();
         Integer quantity = command.quantity();
-        /* Check userID exists */
         if (!userRepository.existsById(userId)) {
             throw new UserNotFound(String.format("User ID %d does not exist", userId));
         }
-        /*
-         * If user has an active cart, use this
-         * Otherwise, create a new cart
-         */
+
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFound(String.format("Product ID %d does not exist", productId)));
+
+        if (!product.isEnabled()) {
+            throw new BusinessRuleViolation(String.format("Product ID %d is not enabled", productId));
+        }
 
         Cart currentCart = cartRepository.findByStatusAndUserId(CartStatus.ACTIVE, userId)
                 .orElseGet(() -> {
@@ -59,11 +60,22 @@ public class AddItemToCartUseCase implements UseCase<AddItemToCartCommand, CartR
                     return cartRepository.save(newCart);
                 });
 
+        int desiredQuantity = quantity;
+        Optional<CartItem> existingItem = currentCart.findItemByProductId(productId);
+        if (existingItem.isPresent()) {
+            desiredQuantity += existingItem.get().getQuantity();
+        }
+
+        if (product.getAvailableQuantity() < desiredQuantity) {
+            throw new InsufficientStockException(productId.toString(), desiredQuantity, product.getAvailableQuantity());
+        }
+
         CartItem itemAdded = CartItem.builder()
                 .cartId(currentCart.getId())
                 .productId(productId)
+                .productName(product.getName())
+                .price(product.getPrice())
                 .quantity(quantity)
-                .subTotal(product.getPrice().multiply(BigDecimal.valueOf(quantity)))
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();

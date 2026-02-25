@@ -33,19 +33,19 @@ public class Cart {
 
         Optional<CartItem> existingItem = findItemByProductId(item.getProductId());
         if (existingItem.isPresent()) {
-            total = total.subtract(existingItem.get().getSubTotal());
+            total = total.subtract(existingItem.get().getSubtotal());
             existingItem.get().increaseQuantity(item.getQuantity());
-            total = total.add(existingItem.get().getSubTotal());
+            total = total.add(existingItem.get().getSubtotal());
         } else {
             this.items.add(item);
-            total = total.add(item.getSubTotal());
+            total = total.add(item.getSubtotal());
         }
     }
 
     public void removeItem(Long productId) {
         if (this.items == null) return;
         Optional<CartItem> cartItem = findItemByProductId(productId);
-        cartItem.ifPresent(item -> this.total = this.total.add(item.getSubTotal().multiply(BigDecimal.valueOf(-1))));
+        cartItem.ifPresent(item -> this.total = this.total.add(item.getSubtotal().multiply(BigDecimal.valueOf(-1))));
         this.items.removeIf(item -> item.getProductId().equals(productId));
     }
 
@@ -57,9 +57,9 @@ public class Cart {
 
         Optional<CartItem> item = findItemByProductId(productId);
         item.ifPresent((cartItem) -> {
-            total = total.add(cartItem.getSubTotal().multiply(BigDecimal.valueOf(-1)));
+            total = total.add(cartItem.getSubtotal().multiply(BigDecimal.valueOf(-1)));
             cartItem.setQuantity(newQuantity);
-            total = total.add(cartItem.getSubTotal());
+            total = total.add(cartItem.getSubtotal());
 
         });
     }
@@ -85,7 +85,7 @@ public class Cart {
                 .sum();
     }
 
-    private Optional<CartItem> findItemByProductId(Long productId) {
+    public Optional<CartItem> findItemByProductId(Long productId) {
         if (this.items == null) return Optional.empty();
 
         return this.items.stream()

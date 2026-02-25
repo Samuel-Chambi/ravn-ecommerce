@@ -1,12 +1,14 @@
 package com.ravn.ecommerce.application.usecases.order;
 
 import com.ravn.ecommerce.application.dto.response.OrderResponse;
+import com.ravn.ecommerce.application.events.EventPublisher;
 import com.ravn.ecommerce.application.repositories.CartRepository;
 import com.ravn.ecommerce.application.repositories.OrderRepository;
 import com.ravn.ecommerce.application.repositories.ProductRepository;
 import com.ravn.ecommerce.application.repositories.UserRepository;
 import com.ravn.ecommerce.application.usecases.UseCase;
 import com.ravn.ecommerce.domain.exceptions.EntityNotFoundException;
+import com.ravn.ecommerce.domain.exceptions.InsufficientStockException;
 import com.ravn.ecommerce.domain.exceptions.InvalidOrderException;
 import com.ravn.ecommerce.domain.exceptions.UserNotFound;
 import com.ravn.ecommerce.domain.model.cart.Cart;
@@ -15,11 +17,13 @@ import com.ravn.ecommerce.domain.model.order.Order;
 import com.ravn.ecommerce.domain.model.order.OrderItem;
 import com.ravn.ecommerce.domain.model.order.OrderStatus;
 import com.ravn.ecommerce.domain.model.product.Product;
+import com.ravn.ecommerce.domain.model.product.events.LowStockEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -30,6 +34,8 @@ public class CreateOrderFromCartUseCase implements UseCase<Long, OrderResponse> 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final EventPublisher eventPublisher;
+    private static final int LOW_STOCK_THRESHOLD = 3;
 
     @Override
     @Transactional
@@ -49,7 +55,7 @@ public class CreateOrderFromCartUseCase implements UseCase<Long, OrderResponse> 
         Order order = Order.builder()
                 .userId(userId)
                 .status(OrderStatus.PENDING)
-                .totalAmount(currentCart.getTotal())
+                .totalAmount(BigDecimal.ZERO)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -58,6 +64,25 @@ public class CreateOrderFromCartUseCase implements UseCase<Long, OrderResponse> 
             Product product = productRepository.findById(cartItem.getProductId())
                     .orElseThrow(() -> new EntityNotFoundException(
                             String.format("Product ID %d not found", cartItem.getProductId())));
+
+            if (!product.isEnabled()) {
+                throw new InvalidOrderException(
+                        String.format("Product %s is not available anymore", product.getName()));
+            }
+
+            if (product.getInventory() != null) {
+                if (product.getAvailableQuantity() < cartItem.getQuantity()) {
+                    throw new InsufficientStockException(product.getId().toString(), cartItem.getQuantity(),
+                            product.getAvailableQuantity());
+                }
+                product.getInventory().removeStock(cartItem.getQuantity());
+                if (product.getInventory().getQuantity() < LOW_STOCK_THRESHOLD) {
+                    eventPublisher.publish(new LowStockEvent(product.getId(), product.getName(),
+                            product.getInventory().getQuantity()));
+                }
+                productRepository.save(product);
+            }
+
             OrderItem orderItem = OrderItem.builder()
                     .productId(cartItem.getProductId())
                     .productName(product.getName())
@@ -75,7 +100,6 @@ public class CreateOrderFromCartUseCase implements UseCase<Long, OrderResponse> 
         // Mark cart as ORDERED
         currentCart.setStatus(CartStatus.ORDERED);
         currentCart.setUpdatedAt(LocalDateTime.now());
-
 
         cartRepository.save(currentCart);
 

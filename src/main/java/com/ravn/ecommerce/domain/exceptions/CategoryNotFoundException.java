@@ -3,7 +3,7 @@ package com.ravn.ecommerce.domain.exceptions;
 /**
  * Exception thrown when a category is not found.
  */
-public class CategoryNotFoundException extends DomainException {
+public class CategoryNotFoundException extends EntityNotFoundException {
 
     public CategoryNotFoundException(Long categoryId) {
         super(

@@ -53,9 +53,8 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public void deleteById(Long productId) {
-        // Soft delete should be handled by Update/Disable use case
-        // But if hard delete is requested:
-        // jpaRepository.deleteById(productId);
+        // DeleteById -> Soft delete using deletedAt field
+         jpaRepository.deleteById(productId);
     }
 
     @Override

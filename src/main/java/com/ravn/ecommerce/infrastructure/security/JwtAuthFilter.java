@@ -1,5 +1,10 @@
 package com.ravn.ecommerce.infrastructure.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.ravn.ecommerce.domain.exceptions.UnauthorizedException;
+import com.ravn.ecommerce.presentation.rest.exceptions.ErrorResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +28,7 @@ import java.util.List;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
     protected void doFilterInternal(
@@ -38,6 +44,28 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         final String token = authHeader.substring(7);
+
+        // Check if token was revoked (logout)
+        if (tokenBlacklistService.isTokenBanned(token)) {
+            log.warn("Attempt to use a revoked JWT token.");
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+            ErrorResponse errorResponse = ErrorResponse
+                    .of(
+                            "Unauthorized",
+                            "No current user logged.",
+                            "UNAUTHORIZED",
+                            request.getRequestURI());
+
+            response.getWriter().write(mapper.writeValueAsString(errorResponse));
+            return;
+        }
 
         try {
             if (jwtService.isTokenValid(token) &&

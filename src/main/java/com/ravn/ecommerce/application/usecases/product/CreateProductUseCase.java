@@ -50,6 +50,7 @@ public class CreateProductUseCase implements UseCase<CreateProductCommand, Produ
                 .categoryId(command.productRequest().getCategoryId())
                 .createdBy(user.getId())
                 .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         Inventory inventory = Inventory.builder()

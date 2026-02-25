@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -43,13 +44,13 @@ public class ProductController {
         return ResponseEntity.ok(listProductsUseCase.execute(query));
     }
 
-
     @GetMapping("/{productId}")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long productId) {
         return ResponseEntity.ok(getProductByIdUseCase.execute(productId));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<ProductResponse> createProduct(@RequestBody @Valid ProductRequest productRequest) {
         Long userId = currentUserService.getCurrentUserId();
         CreateProductCommand command = new CreateProductCommand(productRequest, userId);
@@ -58,6 +59,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<ProductResponse> updateProductById(
             @PathVariable Long productId,
             @RequestBody UpdateProductRequest request) {
@@ -68,6 +70,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Void> deleteProductById(
             @PathVariable Long productId) {
         Long userId = currentUserService.getCurrentUserId();

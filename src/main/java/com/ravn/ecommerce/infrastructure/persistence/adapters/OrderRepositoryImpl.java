@@ -8,6 +8,10 @@ import com.ravn.ecommerce.infrastructure.persistence.jpa.repository.OrderJpaRepo
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import org.springframework.data.domain.ScrollPosition;
+import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.Window;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,10 +47,22 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public Window<Order> findAllByUserId(Long userId, ScrollPosition position, Limit limit) {
+        return orderJpaRepository.findByUserId(userId, position, limit)
+                .map(orderMapper::toDomain);
+    }
+
+    @Override
     public List<Order> findAll() {
         return orderJpaRepository.findAll().stream()
                 .map(orderMapper::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Window<Order> findAll(ScrollPosition position, Limit limit) {
+        return orderJpaRepository.findAllBy(position, limit)
+                .map(orderMapper::toDomain);
     }
 
     @Override

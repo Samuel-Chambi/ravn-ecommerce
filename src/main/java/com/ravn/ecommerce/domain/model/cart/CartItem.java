@@ -18,8 +18,9 @@ public class CartItem {
     private Long id;
     private Long cartId;
     private Long productId;
+    private String productName;
+    private BigDecimal price;
     private int quantity;
-    private BigDecimal subTotal;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -28,29 +29,14 @@ public class CartItem {
         if (newQuantity <= 0) {
             throw new EmptyCartItemException("Quantity must be positive");
         }
-        BigDecimal unitPrice = subTotal.divide(BigDecimal.valueOf(quantity), RoundingMode.HALF_UP);
         this.quantity = newQuantity;
-        this.subTotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
     }
 
     public void increaseQuantity(int amount) {
         if (amount <= 0) {
             throw new InvalidCartLogicException("Amount must be positive");
         }
-        BigDecimal unitPrice = subTotal.divide(BigDecimal.valueOf(quantity), RoundingMode.HALF_UP);
         this.quantity += amount;
-        this.subTotal = this.subTotal.add(unitPrice.multiply(BigDecimal.valueOf(amount)));
-    }
-
-    public void increaseQuantity(int amount, BigDecimal unitPrice) {
-        if (amount <= 0) {
-            throw new InvalidCartLogicException("Amount must be positive");
-        }
-        if (this.subTotal == null) {
-            this.subTotal = BigDecimal.ZERO;
-        }
-        this.quantity += amount;
-        this.subTotal = this.subTotal.add(unitPrice.multiply(BigDecimal.valueOf(amount)));
     }
 
     public void decreaseQuantity(int amount) {
@@ -62,8 +48,13 @@ public class CartItem {
         if (newQuantity < 0) {
             throw new InvalidCartLogicException("Resulting quantity cannot be negative");
         }
-
         this.quantity = newQuantity;
+    }
+
+    // Business methods
+    public BigDecimal getSubtotal(){
+        if(this.price == null) return BigDecimal.ZERO;
+        return this.price.multiply(BigDecimal.valueOf(quantity));
     }
 
     @Override

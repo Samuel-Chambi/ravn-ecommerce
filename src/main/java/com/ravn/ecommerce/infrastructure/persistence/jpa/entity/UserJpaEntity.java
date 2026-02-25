@@ -9,8 +9,13 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 @Entity
 @Table(name = "users")
+@SQLDelete(sql = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE id=?")
+@SQLRestriction("deleted_at IS NULL")
 @Builder
 @Data
 @AllArgsConstructor
@@ -31,7 +36,9 @@ public class UserJpaEntity {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private List<AddressJpaEntity> addresses;
 

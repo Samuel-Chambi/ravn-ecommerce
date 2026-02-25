@@ -8,6 +8,7 @@ import com.ravn.ecommerce.application.usecases.UseCase;
 import com.ravn.ecommerce.application.usecases.productImage.commands.UploadProductImageCommand;
 import com.ravn.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ravn.ecommerce.domain.exceptions.InvalidOperationException;
+import com.ravn.ecommerce.domain.model.product.Product;
 import com.ravn.ecommerce.domain.model.product.ProductImage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +45,7 @@ public class UploadProductImageUseCase implements UseCase<UploadProductImageComm
         log.info("Uploading {} images, for product {}", newFiles, productId);
 
         // Verify product exists
-        productRepository.findById(productId)
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Product", productId));
 
         // Enforce max images limit
@@ -62,7 +64,7 @@ public class UploadProductImageUseCase implements UseCase<UploadProductImageComm
 
         // Upload and save images
         List<ProductImageResponse> uploadedImages = new ArrayList<>();
-        Boolean shouldMarkAsPrimary = Boolean.TRUE.equals(markFirstAsPrimary) && currentImageCount == 0;
+        boolean shouldMarkAsPrimary = Boolean.TRUE.equals(markFirstAsPrimary) && currentImageCount == 0;
 
         for (int i = 0; i < newFiles; i++) {
             MultipartFile file = files.get(i);
@@ -85,6 +87,8 @@ public class UploadProductImageUseCase implements UseCase<UploadProductImageComm
                         "IMAGE_UPLOAD_FAILED");
             }
         }
+        product.setUpdatedAt(LocalDateTime.now());
+        Product saved = productRepository.save(product);
         return uploadedImages;
     }
 }

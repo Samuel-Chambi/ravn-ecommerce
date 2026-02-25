@@ -72,6 +72,8 @@ public class AppConfig {
             private String bucket;
             private String region;
             private String endpoint; // For LocalStack
+            private String accessKey;
+            private String secretKey;
         }
     }
 

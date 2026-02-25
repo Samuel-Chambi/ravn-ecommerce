@@ -6,6 +6,11 @@ import com.ravn.ecommerce.application.usecases.like.DislikeProductUseCase;
 import com.ravn.ecommerce.application.usecases.like.GetLikedProductsUseCase;
 import com.ravn.ecommerce.application.usecases.like.LikeProductUseCase;
 import com.ravn.ecommerce.application.usecases.like.command.SwitchLikeProductCommand;
+import com.ravn.ecommerce.application.usecases.like.command.GetLikedProductsCommand;
+import org.springframework.data.domain.ScrollPosition;
+import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.Window;
+import com.ravn.ecommerce.application.dto.response.ProductResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,9 +40,11 @@ public class LikeController {
     }
 
     @GetMapping
-    public ResponseEntity<PagedProductResponse> getLikedProducts() {
+    public ResponseEntity<Window<ProductResponse>> getLikedProducts(
+            @RequestParam(defaultValue = "10") int limit) {
         Long userId = currentUserService.getCurrentUserId();
-        PagedProductResponse response = getLikedProductsUseCase.execute(userId);
+        Window<ProductResponse> response = getLikedProductsUseCase.execute(
+                new GetLikedProductsCommand(userId, ScrollPosition.keyset(), Limit.of(limit)));
         return ResponseEntity.ok(response);
     }
 }
