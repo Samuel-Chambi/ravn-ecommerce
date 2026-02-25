@@ -1,7 +1,7 @@
 package com.ravn.ecommerce.application.services;
 
-import io.github.bucket4j.Bucket;
+import org.redisson.api.RRateLimiter;
 
 public interface RateLimitService {
-    Bucket resolveBucket(String key);
+    RRateLimiter getRateLimiter(String key);
 }

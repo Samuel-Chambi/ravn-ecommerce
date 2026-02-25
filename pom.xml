@@ -75,10 +75,11 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Redisson for Distributed Rate Limiting -->
         <dependency>
-            <groupId>com.github.vladimir-bukhtoyarov</groupId>
-            <artifactId>bucket4j-core</artifactId>
-            <version>7.6.0</version>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <version>3.25.2</version>
         </dependency>
 
         <!-- AWS SDK v2 for S3 (LocalStack and AWS S3) -->

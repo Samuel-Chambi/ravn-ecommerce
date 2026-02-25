@@ -1,8 +1,7 @@
 package com.ravn.ecommerce.presentation.filter;
 
 import com.ravn.ecommerce.application.services.RateLimitService;
-import io.github.bucket4j.Bucket;
-import io.github.bucket4j.ConsumptionProbe;
+import org.redisson.api.RRateLimiter;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,7 +9,10 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import com.ravn.ecommerce.domain.exceptions.TooManyRequestsException;
 
 import java.io.IOException;
 
@@ -18,9 +20,12 @@ import java.io.IOException;
 public class RateLimitFilter implements Filter {
 
     private final RateLimitService rateLimitService;
+    private final HandlerExceptionResolver resolver;
 
-    public RateLimitFilter(RateLimitService rateLimitService) {
+    public RateLimitFilter(RateLimitService rateLimitService,
+            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
         this.rateLimitService = rateLimitService;
+        this.resolver = resolver;
     }
 
     @Override
@@ -32,16 +37,15 @@ public class RateLimitFilter implements Filter {
 
         if (httpRequest.getRequestURI().startsWith("/auth/reset-password")) {
             String ip = httpRequest.getRemoteAddr();
-            Bucket bucket = rateLimitService.resolveBucket(ip);
-            ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
+            RRateLimiter rateLimiter = rateLimitService.getRateLimiter("rate_limit:reset_pwd:" + ip);
 
-            if (!probe.isConsumed()) {
-                httpResponse.setStatus(429);
-                httpResponse.getWriter().write("Too many requests");
+            if (!rateLimiter.tryAcquire(1)) {
+                resolver.resolveException(httpRequest, httpResponse, null,
+                        new TooManyRequestsException("Too many reset attempts. Please wait before trying again."));
                 return;
             }
 
-            httpResponse.addHeader("X-Rate-Limit-Remaining", String.valueOf(probe.getRemainingTokens()));
+            httpResponse.addHeader("X-Rate-Limit-Remaining", String.valueOf(rateLimiter.availablePermits()));
         }
 
         chain.doFilter(request, response);

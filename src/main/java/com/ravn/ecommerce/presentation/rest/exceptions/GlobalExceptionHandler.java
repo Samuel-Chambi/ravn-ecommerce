@@ -4,6 +4,7 @@ import com.ravn.ecommerce.domain.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -158,7 +160,7 @@ public class GlobalExceptionHandler {
 
                 // Extract validation error messages
                 String errorMessage = ex.getAllErrors().stream()
-                                .map(error -> error.getDefaultMessage())
+                                .map(MessageSourceResolvable::getDefaultMessage)
                                 .filter(msg -> msg != null && !msg.isEmpty())
                                 .findFirst()
                                 .orElse("Invalid image file(s)");
@@ -194,7 +196,7 @@ public class GlobalExceptionHandler {
 
         // SECURITY EXCEPTIONS
         @ExceptionHandler(UnauthorizedException.class)
-        public ResponseEntity<ErrorResponse> habdleUnauthorized(
+        public ResponseEntity<ErrorResponse> handleUnauthorized(
                         UnauthorizedException ex,
                         HttpServletRequest request) {
                 log.warn("Unauthorized: {}", ex.getMessage());
@@ -267,6 +269,21 @@ public class GlobalExceptionHandler {
                                 request.getRequestURI());
 
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+
+        @ExceptionHandler(TooManyRequestsException.class)
+        public ResponseEntity<ErrorResponse> handleTooManyRequestsException(
+                TooManyRequestsException ex,
+                HttpServletRequest request) {
+                log.warn("Rate limit exceeded: {}", ex.getMessage());
+
+                ErrorResponse errorResponse = ErrorResponse.of(
+                        "Too many requests",
+                        ex.getMessage(),
+                        ex.getErrorCode(),
+                        request.getRequestURI());
+
+                return ResponseEntity.status(ex.getStatus()).body(errorResponse);
         }
 
         @ExceptionHandler(Exception.class)

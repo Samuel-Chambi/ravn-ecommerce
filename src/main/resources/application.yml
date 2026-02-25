@@ -31,7 +31,7 @@ app:
       max-request-size: 50MB
 
   rate-limit:
-    requests: ${RATE_LIMIT_REQUESTS:5}
+    requests: ${RATE_LIMIT_REQUESTS:3}
     window-seconds: ${RATE_LIMIT_WINDOW:3600}
 
   stripe:

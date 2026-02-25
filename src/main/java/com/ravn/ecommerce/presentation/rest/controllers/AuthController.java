@@ -4,20 +4,18 @@ import com.ravn.ecommerce.application.dto.request.auth.*;
 import com.ravn.ecommerce.application.dto.response.ForgotPasswordResponse;
 import com.ravn.ecommerce.application.dto.response.AuthResponse;
 import com.ravn.ecommerce.application.usecases.auth.*;
-import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Refill;
+import com.ravn.ecommerce.application.services.RateLimitService;
+import com.ravn.ecommerce.domain.exceptions.TooManyRequestsException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RRateLimiter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/auth")
@@ -30,15 +28,7 @@ public class AuthController {
     private final ForgotPasswordUseCase forgotPasswordUseCase;
     private final ResetPasswordUseCase resetPasswordUseCase;
 
-    // In-memory rate limiter per IP
-    // 3 requests per hour for forgot-password
-    private final Map<String, Bucket> rateLimitBuckets = new ConcurrentHashMap<>();
-
-    private Bucket getBucketForIp(String ip) {
-        return rateLimitBuckets.computeIfAbsent(ip, k -> Bucket.builder()
-                .addLimit(Bandwidth.classic(3, Refill.intervally(3, Duration.ofHours(1))))
-                .build());
-    }
+    private final RateLimitService rateLimitService;
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> signUp(
@@ -64,11 +54,10 @@ public class AuthController {
             HttpServletRequest httpRequest) {
 
         String clientIp = httpRequest.getRemoteAddr();
-        Bucket bucket = getBucketForIp(clientIp);
+        RRateLimiter rateLimiter = rateLimitService.getRateLimiter("rate_limit:forgot_pwd:" + clientIp);
 
-        if (!bucket.tryConsume(1)) {
-            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,
-                    "Too many reset attempts. Please wait before trying again.");
+        if (!rateLimiter.tryAcquire(1)) {
+            throw new TooManyRequestsException("Too many reset attempts. Please wait before trying again.");
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(forgotPasswordUseCase.execute(request));
