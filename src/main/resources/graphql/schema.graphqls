@@ -97,115 +97,77 @@ input UpdateCartItemInput {
 
 # Queries
 type Query {
-    """ CLIENT QUERIES """
+    # CLIENT QUERIES
 
-    """ 
-        Current authenticated user orders with cursor-based pagination
-    """
+    # Current authenticated user orders with cursor-based pagination
     myOrders(first: Int = 10, after: String): OrderConnection!
 
-    """
-        Get a user order by ID
-    """
+    # Get a user order by ID
     myOrderById(orderId: ID!): Order!
 
-    """ MANAGER QUERIES """
+    # MANAGER QUERIES
 
-    """
-        All ecommerce orders (MANAGER role only) with cursor-based pagination
-    """
+    # All ecommerce orders (MANAGER role only) with cursor-based pagination
     allOrders(first: Int = 10, after: String): OrderConnection!
 
-    """
-        Get any order by ID (MANAGER role only)
-    """
+    # Get any order by ID (MANAGER role only)
     orderById(orderId: ID!): Order!
 
-    """ AUTH-REQUIRED QUERIES """
+    # AUTH-REQUIRED QUERIES
 
-    """
-        Current authenticated user cart
-    """
+    # Current authenticated user cart
     myCart: Cart!
 
-    """
-        List of authenticated user's favorite products with cursor-based pagination
-    """
+    # List of authenticated user's favorite products with cursor-based pagination
     likedProducts(first: Int = 10, after: String): ProductConnection!
 }
 
 # Mutations
 type Mutation {
-    """ CART MUTATIONS """
+    # CART MUTATIONS
 
-    """
-        Add item to authenticated user cart
-    """
+    # Add item to authenticated user cart
     addToCart(input: AddToCartInput!): Cart!
 
-    """
-        Update cart item
-    """
+    # Update cart item
     updateCartItem(input: UpdateCartItemInput!): Cart!
 
-    """
-        Delete cart item
-    """
+    # Delete cart item
     removeFromCart(cartItemId: ID!): Cart!
 
-    """
-        Clean entire cart
-    """
+    # Clean entire cart
     clearCart: Boolean!
 
-    """ ORDER MUTATIONS (CLIENT) """
+    # ORDER MUTATIONS (CLIENT)
 
-    """
-        Create an order from cart
-    """
+    # Create an order from cart
     createOrderFromCart: Order!
 
-    """
-        Cancel a user's order
-    """
+    # Cancel a user's order
     cancelUserOrderById(orderId: ID!): Boolean!
 
-    """ PRODUCT MANAGEMENT (MANAGER) """
+    # PRODUCT MANAGEMENT (MANAGER)
 
-    """
-        Delete product (MANAGER only)
-    """
+    # Delete product (MANAGER only)
     deleteProduct(productId: ID!): Boolean!
 
-    """
-        Disable product (MANAGER only)
-    """
+    # Disable product (MANAGER only)
     disableProduct(productId: ID!): Product!
 
-    """
-        Enable product (MANAGER only)
-    """
+    # Enable product (MANAGER only)
     enableProduct(productId: ID!): Product!
 
-    """
-        Update order status (MANAGER only)
-    """
+    # Update order status (MANAGER only)
     updateDeliveryStatus(orderId: ID!, status: OrderStatus!): Order!
 
-    """
-        Cancel any order by ID (MANAGER only)
-    """
+    # Cancel any order by ID (MANAGER only)
     cancelOrderById(orderId: ID!): Boolean!
 
-    """ FAVORITES (CLIENT) """
+    # FAVORITES (CLIENT)
 
-    """
-        Add product to user's favorites
-    """
+    # Add product to user's favorites
     likeProduct(productId: ID!): Boolean!
 
-    """
-        Remove product from user's favorites
-    """
+    # Remove product from user's favorites
     unlikeProduct(productId: ID!): Boolean!
 }

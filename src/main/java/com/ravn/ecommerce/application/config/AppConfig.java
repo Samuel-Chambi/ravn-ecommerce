@@ -7,6 +7,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
+
 @Configuration
 @ConfigurationProperties(prefix = "app")
 @Validated
@@ -101,10 +103,10 @@ public class AppConfig {
     @Setter
     public static class CorsConfig {
         @NotNull(message = "Allowed origins cannot be null")
-        private java.util.List<String> allowedOrigins;
+        private List<String> allowedOrigins;
         @NotNull(message = "Allowed methods cannot be null")
-        private java.util.List<String> allowedMethods;
+        private List<String> allowedMethods;
         @NotNull(message = "Allowed headers cannot be null")
-        private java.util.List<String> allowedHeaders;
+        private List<String> allowedHeaders;
     }
 }
