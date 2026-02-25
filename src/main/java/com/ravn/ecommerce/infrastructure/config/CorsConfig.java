@@ -22,7 +22,6 @@ public class CorsConfig {
         configuration.setAllowedOrigins(appConfig.getCors().getAllowedOrigins());
         configuration.setAllowedMethods(appConfig.getCors().getAllowedMethods());
         configuration.setAllowedHeaders(appConfig.getCors().getAllowedHeaders());
-        configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
