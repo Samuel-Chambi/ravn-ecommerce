@@ -41,21 +41,10 @@ public class CancelOrderUseCase implements UseCase<Long, Void> {
 
         if (!order.canBeCancelled()) {
             throw new InvalidOrderException(
-                    String.format("Order ID %d cannot be cancelled (current status: %s)", orderId, order.getStatus()));
-        }
-
-        if (order.isPaid()) {
-            paymentRepository.findByOrderId(order.getId()).ifPresent(payment -> {
-                try {
-                    stripeService.refundPayment(payment.getStripePaymentIntent());
-                    payment.markAsRefunded();
-                    paymentRepository.save(payment);
-                    log.info("Payment ID {} successfully refunded via Stripe", payment.getId());
-                } catch (Exception e) {
-                    log.error("Failed to refund payment for order {}", orderId, e);
-                    throw new RuntimeException("Failed to process refund. Order was not cancelled.", e);
-                }
-            });
+                    String.format(
+                            "Order ID %d cannot be cancelled instantly (current status: %s). PAID, SHIPPED or DELIVERED orders must use the Refund Request system.",
+                            orderId,
+                            order.getStatus()));
         }
 
         order.cancel();
