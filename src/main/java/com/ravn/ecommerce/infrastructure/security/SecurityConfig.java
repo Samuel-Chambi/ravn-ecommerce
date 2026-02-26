@@ -35,7 +35,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/graphiql/**").permitAll()
                         // GraphQL endpoint: security is enforced at method level via @PreAuthorize
                         .requestMatchers("/graphql").permitAll()
@@ -58,7 +57,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/orders/{orderId}").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.PATCH, "/orders/{orderId}/cancel").hasRole("MANAGER")
 
-                        // Stripe webhook — authenticated by Stripe-Signature header, not JWT
+                        // Refunds
+                        .requestMatchers(HttpMethod.POST, "/refunds").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/refunds/me").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/refunds/pending").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/refunds/{refundId}/approve").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/refunds/{refundId}/reject").hasRole("MANAGER")
+
+                        // Payments webhooks
                         .requestMatchers(HttpMethod.POST, "/payments/webhook").permitAll()
 
                         // Other User-scoped services

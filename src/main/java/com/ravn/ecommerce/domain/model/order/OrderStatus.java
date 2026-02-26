@@ -7,11 +7,13 @@ package com.ravn.ecommerce.domain.model.order;
 * 3 -> DELIVERED
 * 4 -> CANCELLED
 * 5 -> SHIPPED
+* 6 -> REFUNDED
 * */
 public enum OrderStatus {
     PENDING,
     PAID,
     DELIVERED,
     CANCELLED,
-    SHIPPED
+    SHIPPED,
+    REFUNDED
 }

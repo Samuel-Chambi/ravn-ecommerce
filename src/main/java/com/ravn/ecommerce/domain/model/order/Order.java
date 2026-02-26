@@ -45,15 +45,29 @@ public class Order {
         this.status = OrderStatus.DELIVERED;
     }
 
+    public void markAsRefunded() {
+        if (this.status != OrderStatus.PAID && this.status != OrderStatus.SHIPPED
+                && this.status != OrderStatus.DELIVERED) {
+            throw new InvalidOrderLogicException("Only PAID, SHIPPED, or DELIVERED orders can be refunded");
+        }
+        this.status = OrderStatus.REFUNDED;
+    }
+
     public void cancel() {
-        if (this.status == OrderStatus.SHIPPED) {
-            throw new InvalidOrderLogicException("Cannot cancel shipped orders");
+        if (this.status != OrderStatus.PENDING) {
+            throw new InvalidOrderLogicException(
+                    "Only PENDING orders can be instantly cancelled. For others, please request a Refund instead.");
         }
         this.status = OrderStatus.CANCELLED;
     }
 
     public boolean canBeCancelled() {
-        return this.status == OrderStatus.PENDING || this.status == OrderStatus.PAID;
+        return this.status == OrderStatus.PENDING;
+    }
+
+    public boolean canRequestRefund() {
+        return this.status == OrderStatus.PAID || this.status == OrderStatus.SHIPPED
+                || this.status == OrderStatus.DELIVERED;
     }
 
     public boolean isPending() {
@@ -66,6 +80,14 @@ public class Order {
 
     public boolean isShipped() {
         return this.status == OrderStatus.SHIPPED;
+    }
+
+    public boolean isDelivered() {
+        return this.status == OrderStatus.DELIVERED;
+    }
+
+    public boolean isRefunded() {
+        return this.status == OrderStatus.REFUNDED;
     }
 
     public boolean isCancelled() {

@@ -1,4 +1,4 @@
-package com.ravn.ecommerce.application.dto.request;
+package com.ravn.ecommerce.application.dto.request.order;
 
 import com.ravn.ecommerce.application.validation.ValidOrderStatus;
 import com.ravn.ecommerce.domain.model.order.OrderStatus;
