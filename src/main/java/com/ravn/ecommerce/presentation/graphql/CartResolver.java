@@ -5,22 +5,24 @@ import com.ravn.ecommerce.application.usecases.cart.*;
 import com.ravn.ecommerce.application.usecases.cart.command.AddItemToCartCommand;
 import com.ravn.ecommerce.application.usecases.cart.command.RemoveItemFromCartCommand;
 import com.ravn.ecommerce.application.usecases.cart.command.UpdateItemQuantityCommand;
-import com.ravn.ecommerce.application.usecases.product.GetProductByIdUseCase;
+import com.ravn.ecommerce.application.repositories.ProductRepository;
 import com.ravn.ecommerce.application.dto.response.CartItemResponse;
-import com.ravn.ecommerce.application.dto.response.ProductResponse;
+import com.ravn.ecommerce.domain.model.product.Product;
 import com.ravn.ecommerce.domain.model.product.ProductImage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class CartResolver {
     private final UpdateItemQuantityUseCase updateItemQuantityUseCase;
     private final RemoveItemFromCartUseCase removeItemFromCartUseCase;
     private final ClearCartUseCase clearCartUseCase;
-    private final GetProductByIdUseCase getProductByIdUseCase;
+    private final ProductRepository productRepository;
 
     // ── Queries ───────────────────────────────────────────────────────────────
 
@@ -79,23 +81,27 @@ public class CartResolver {
         return true;
     }
 
-    // ── Fields ────────────────────────────────────────────────────────────────
+    // ── Field Resolvers ──────────────────────────────────────────────────────
 
-    @SchemaMapping(typeName = "CartItem", field = "primaryImage")
-    public String getPrimaryImage(CartItemResponse cartItem) {
-        try {
-            ProductResponse product = getProductByIdUseCase.execute(cartItem.getProductId());
-            if (product.getImages() != null && !product.getImages().isEmpty()) {
-                return product.getImages().stream()
-                        .filter(ProductImage::isPrimary)
-                        .findFirst()
-                        .map(ProductImage::getImageUrl)
-                        .orElse(product.getImages().getFirst().getImageUrl());
-            }
-        } catch (Exception e) {
-            log.warn("Could not fetch primary image for product ID: {}", cartItem.getProductId());
-        }
-        return null; // Return null intentionally if not found, to indicate no image
+    @BatchMapping(typeName = "CartItem", field = "primaryImage")
+    public Map<CartItemResponse, String> primaryImages(List<CartItemResponse> cartItems) {
+        List<Long> productIds = cartItems.stream()
+                .map(CartItemResponse::getProductId)
+                .distinct()
+                .toList();
+
+        Map<Long, String> imageMap = productRepository.findAllById(productIds).stream()
+                .collect(Collectors.toMap(
+                        Product::getId,
+                        product -> {
+                            ProductImage img = product.getPrimaryImage();
+                            return img != null ? img.getImageUrl() : "";
+                        }));
+
+        return cartItems.stream()
+                .collect(Collectors.toMap(
+                        item -> item,
+                        item -> imageMap.getOrDefault(item.getProductId(), "")));
     }
 
     // ── Helper ────────────────────────────────────────────────────────────────

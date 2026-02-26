@@ -12,6 +12,11 @@ enum OrderStatus {
 }
 
 # Types
+type User {
+    id: ID!
+    email: String!
+}
+
 type OrderItem {
     id: ID!
     productName: String!
@@ -22,7 +27,7 @@ type OrderItem {
 
 type Order {
     id: ID!
-    userId: ID!
+    client: User
     status: OrderStatus!
     total: BigDecimal!
     items: [OrderItem!]!

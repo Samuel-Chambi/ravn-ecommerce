@@ -57,4 +57,11 @@ public class UserRepositoryImpl implements UserRepository {
                 .map(mapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<User> findAllById(List<Long> ids) {
+        return userJpaRepository.findAllById(ids).stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
 }

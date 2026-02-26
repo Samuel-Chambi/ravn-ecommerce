@@ -27,7 +27,7 @@ public class OrderResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static OrderResponse toDto(Order order){
+    public static OrderResponse toDto(Order order) {
         return OrderResponse.builder()
                 .id(order.getId())
                 .userId(order.getUserId())
