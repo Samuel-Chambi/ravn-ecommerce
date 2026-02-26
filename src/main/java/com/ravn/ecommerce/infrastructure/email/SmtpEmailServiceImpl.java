@@ -6,11 +6,11 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.util.Map;
 
@@ -21,7 +21,8 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class EmailServiceImpl implements EmailService {
+@ConditionalOnProperty(name = "app.email.provider", havingValue = "smtp", matchIfMissing = true)
+public class SmtpEmailServiceImpl implements EmailService {
 
     private final JavaMailSender javaMailSender;
     private final EmailTemplateEngine emailTemplateEngine;

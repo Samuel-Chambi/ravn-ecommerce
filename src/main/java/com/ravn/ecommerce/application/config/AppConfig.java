@@ -43,11 +43,19 @@ public class AppConfig {
     @Setter
     public static class EmailConfig {
         private boolean enabled = true;
+        private String provider = "smtp";
         private String from;
         private String host;
         private Integer port;
         private String username;
         private String password;
+        private ResendConfig resend;
+
+        @Getter
+        @Setter
+        public static class ResendConfig {
+            private String apiKey;
+        }
     }
 
     @Getter

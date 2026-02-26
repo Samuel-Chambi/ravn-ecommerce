@@ -9,11 +9,14 @@ app:
 
   email:
     enabled: true
-    from: ${EMAIL_FROM:noreply@ecommerce.com}
+    provider: ${EMAIL_PROVIDER:smtp}
+    from: ${EMAIL_FROM:noreply@socimep.org}
     host: ${EMAIL_HOST:localhost}
     port: ${EMAIL_PORT:587}
     username: ${EMAIL_USERNAME:disabled}
     password: ${EMAIL_PASSWORD:disabled}
+    resend:
+      api-key: ${RESEND_API_KEY:}
 
   storage:
     type: ${STORAGE_TYPE:s3}
