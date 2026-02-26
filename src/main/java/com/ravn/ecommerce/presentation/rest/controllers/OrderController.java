@@ -67,7 +67,7 @@ public class OrderController {
         return ResponseEntity.ok(getOrderByIdUseCase.execute(orderId));
     }
 
-    @PatchMapping("/orders/{orderId}/cancel")
+    @PatchMapping("/{orderId}/cancel")
     public ResponseEntity<Void> cancelOrder(@PathVariable Long orderId) {
         cancelOrderUseCase.execute(orderId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
