@@ -4,10 +4,13 @@ import com.ravn.ecommerce.application.repositories.LikeRepository;
 import com.ravn.ecommerce.application.repositories.UserRepository;
 import com.ravn.ecommerce.application.services.EmailService;
 import com.ravn.ecommerce.domain.model.order.events.OrderStatusChangedEvent;
+import com.ravn.ecommerce.domain.model.order.events.RefundRejectedEvent;
+import com.ravn.ecommerce.domain.model.order.events.RefundRequestedEvent;
 import com.ravn.ecommerce.domain.model.product.Like;
 import com.ravn.ecommerce.domain.model.product.events.LowStockEvent;
 import com.ravn.ecommerce.domain.model.product.events.ProductDiscountedEvent;
 import com.ravn.ecommerce.domain.model.user.User;
+import com.ravn.ecommerce.domain.model.user.UserRole;
 import com.ravn.ecommerce.domain.model.user.events.PasswordChangedEvent;
 import com.ravn.ecommerce.application.usecases.user.SendPasswordChangeEmailUseCase;
 import lombok.RequiredArgsConstructor;
@@ -115,6 +118,47 @@ public class NotificationEventListener {
         });
     }
 
+    // ── Refund Requested (notify managers) ─────────────────────────────────────
+
+    @Async
+    @EventListener
+    @Transactional(readOnly = true)
+    public void onRefundRequested(RefundRequestedEvent event) {
+        log.info("Sending refund-requested emails to all managers for Refund ID {}", event.getRefundId());
+        List<User> managers = userRepository.findByRole(UserRole.MANAGER);
+        managers.forEach(manager -> {
+            log.debug("Notifying manager {} about refund request {}", manager.getEmail(), event.getRefundId());
+            emailService.sendHtmlEmail(
+                    manager.getEmail(),
+                    "New Refund Request #" + event.getRefundId() + " for Order #" + event.getOrderId(),
+                    "refund-requested",
+                    Map.of(
+                            "refundId", event.getRefundId(),
+                            "orderId", event.getOrderId(),
+                            "userId", event.getUserId(),
+                            "reason", event.getReason()));
+        });
+    }
+    // ── Refund Rejected (notify requesting user) ────────────────────────────────
+
+    @Async
+    @EventListener
+    @Transactional(readOnly = true)
+    public void onRefundRejected(RefundRejectedEvent event) {
+        log.info("Sending refund-rejected email to user {} for Refund ID {}", event.getUserId(), event.getRefundId());
+        userRepository.findById(event.getUserId()).ifPresent(user -> {
+            emailService.sendHtmlEmail(
+                    user.getEmail(),
+                    "Refund Request #" + event.getRefundId() + " for Order #" + event.getOrderId() + " – Rejected",
+                    "refund-rejected",
+                    Map.of(
+                            "refundId", event.getRefundId(),
+                            "orderId", event.getOrderId(),
+                            "adminNote", event.getAdminNote() != null ? event.getAdminNote() : "",
+                            "email", user.getEmail()));
+        });
+    }
+
     private String formatStatus(String status) {
         return switch (status) {
             case "PENDING" -> "Pending";
@@ -122,6 +166,7 @@ public class NotificationEventListener {
             case "SHIPPED" -> "Shipped";
             case "DELIVERED" -> "Delivered";
             case "CANCELLED" -> "Cancelled";
+            case "REFUNDED" -> "Refunded";
             default -> status;
         };
     }

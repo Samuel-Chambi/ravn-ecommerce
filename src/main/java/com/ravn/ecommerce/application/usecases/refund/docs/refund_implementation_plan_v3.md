@@ -1,16 +1,16 @@
 # Refund Feature – Implementation Plan v3
 
-## Objetivo
+## Goal
 
-Aplicar las correcciones necesarias al feature de Refund identificadas después del v2:
+Apply the corrections identified after v2 to the Refund feature:
 
-1. **DB / Persistencia**: Los estados del Refund deben guardarse como `int` en la base de datos (igual que `orders.status`), y el mapper debe convertir entre el `int` y el enum `RefundStatus` manualmente.
-2. **Mapper corregido**: `RefundMapper` debe reimplementarse como `@Component` manual con switch expressions, igual que `OrderMapper` y `PaymentMapper`.
-3. **DTO de respuesta**: Crear `RefundResponse` y usarlo en el controller y use cases, evitando exponer la entity de dominio directamente.
-4. **Lógica de negocio de cancelación / refund**:
-   - Si la orden está en `PENDING` y se cancela → restaurar inventario + pasar a `CANCELLED`.
-   - Si la orden está en cualquier otro estado elegible → generar el `Refund` (request). El admin luego aprueba o rechaza. Si se aprueba → `REFUNDED`. Si se rechaza → queda en su estado original.
-5. **OrderMapper**: Le faltaba el case `REFUNDED` (6) en las conversiones.
+1. **DB / Persistence**: Refund statuses must be stored as `int` in the database (same as `orders.status`), and the mapper must manually convert between the `int` and the `RefundStatus` enum.
+2. **Manual Mapper**: `RefundMapper` must be reimplemented as a manual `@Component` class with switch expressions, following the same pattern as `OrderMapper` and `PaymentMapper`.
+3. **Response DTO**: Create `RefundResponse` and use it in the controller and use cases, avoiding direct exposure of the domain entity.
+4. **Cancellation / Refund business logic**:
+   - If the order is `PENDING` and gets cancelled → restore inventory + set status to `CANCELLED`.
+   - If the order is in any other eligible state → generate the `Refund` (request). The admin then approves or rejects it. If approved → `REFUNDED`. If rejected → remains in its original state.
+5. **OrderMapper**: Missing `REFUNDED` (6) case in the conversions.
 
 ---
 
@@ -22,7 +22,7 @@ Aplicar las correcciones necesarias al feature de Refund identificadas después 
 
 #### [MODIFY] [RefundJpaEntity.java](file:///d:/RAVN/ravn-ecommerce/src/main/java/com/ravn/ecommerce/infrastructure/persistence/jpa/entity/RefundJpaEntity.java)
 
-Cambiar el campo `status` de `@Enumerated(EnumType.STRING) RefundStatus` a `int` (igual que `OrderJpaEntity`).
+Changed the `status` field from `@Enumerated(EnumType.STRING) RefundStatus` to `int` (same as `OrderJpaEntity`).
 
 ```diff
 - import com.ravn.ecommerce.domain.model.order.RefundStatus;
@@ -38,7 +38,7 @@ Cambiar el campo `status` de `@Enumerated(EnumType.STRING) RefundStatus` a `int`
 
 #### [MODIFY] [RefundJpaRepository.java](file:///d:/RAVN/ravn-ecommerce/src/main/java/com/ravn/ecommerce/infrastructure/persistence/jpa/repository/RefundJpaRepository.java)
 
-El método `findByStatus` debe aceptar `int` en vez de `String`.
+The `findByStatus` method now accepts `int` instead of `String`.
 
 ```diff
 - List<RefundJpaEntity> findByStatus(String status);
@@ -51,9 +51,9 @@ El método `findByStatus` debe aceptar `int` en vez de `String`.
 
 #### [MODIFY] [RefundMapper.java](file:///d:/RAVN/ravn-ecommerce/src/main/java/com/ravn/ecommerce/infrastructure/persistence/jpa/mapper/RefundMapper.java)
 
-Reemplazar la interfaz MapStruct con una clase `@Component` manual que use switch expressions, siguiendo el patrón de `PaymentMapper`.
+Replaced the MapStruct interface with a manual `@Component` class using switch expressions, following the `PaymentMapper` pattern.
 
-**Mapping (en base al comentario en `RefundStatus.java`):**
+**Mapping (based on the comment in `RefundStatus.java`):**
 - `1` → `PENDING`
 - `2` → `APPROVED`
 - `3` → `REJECTED`
@@ -108,7 +108,7 @@ public class RefundMapper implements Mapper<RefundJpaEntity, Refund> {
 
 #### [MODIFY] [OrderMapper.java](file:///d:/RAVN/ravn-ecommerce/src/main/java/com/ravn/ecommerce/infrastructure/persistence/jpa/mapper/OrderMapper.java)
 
-Agregar el case `REFUNDED` (6) que falta en ambas conversiones.
+Added the missing `REFUNDED` (6) case in both conversions.
 
 ```diff
   case 4 -> OrderStatus.CANCELLED;
@@ -130,8 +130,8 @@ Agregar el case `REFUNDED` (6) que falta en ambas conversiones.
 
 #### [MODIFY] [RefundRepositoryImpl.java](file:///d:/RAVN/ravn-ecommerce/src/main/java/com/ravn/ecommerce/infrastructure/persistence/adapters/RefundRepositoryImpl.java)
 
-- Cambiar la llamada `mapper.toEntity(refund)` por `mapper.toJpaEntity(refund)` (para que coincida con el método de la interfaz `Mapper<I,O>`).
-- En `findByStatus`, convertir `RefundStatus` a `int` antes de llamar al repo.
+- Changed `mapper.toEntity(refund)` to `mapper.toJpaEntity(refund)` (to match the `Mapper<I,O>` interface method).
+- In `findByStatus`, convert `RefundStatus` to `int` before calling the repository.
 
 ```diff
   public Refund save(Refund refund) {
@@ -155,7 +155,7 @@ Agregar el case `REFUNDED` (6) que falta en ambas conversiones.
 
 #### [NEW] [RefundResponse.java](file:///d:/RAVN/ravn-ecommerce/src/main/java/com/ravn/ecommerce/application/dto/response/RefundResponse.java)
 
-Crear un DTO de respuesta que siga el patrón de `OrderResponse` con un método estático `toDto(Refund)`.
+Created a response DTO following the `OrderResponse` pattern with a static `toDto(Refund)` method.
 
 ```java
 package com.ravn.ecommerce.application.dto.response;
@@ -195,9 +195,9 @@ public class RefundResponse {
 
 ### Use Cases
 
-#### [MODIFY] [RequestRefundUseCase.java](file:///d:/RAVN/ravn-ecommerce/src/main/java/com/ravn/ecommerce/application/usecases/order/RequestRefundUseCase.java)
+#### [MODIFY] [RequestRefundUseCase.java](file:///d:/RAVN/ravn-ecommerce/src/main/java/com/ravn/ecommerce/application/usecases/refund/RequestRefundUseCase.java)
 
-Cambiar el tipo de retorno de `Refund` a `RefundResponse`.
+Changed the return type from `Refund` to `RefundResponse`.
 
 ```diff
 - public class RequestRefundUseCase implements UseCase<RequestRefundCommand, Refund> {
@@ -209,13 +209,13 @@ Cambiar el tipo de retorno de `Refund` a `RefundResponse`.
 +     return RefundResponse.toDto(savedRequest);
 ```
 
-#### [MODIFY] [GetUserRefundsUseCase.java](file:///d:/RAVN/ravn-ecommerce/src/main/java/com/ravn/ecommerce/application/usecases/order/GetUserRefundsUseCase.java)
+#### [MODIFY] [GetUserRefundsUseCase.java](file:///d:/RAVN/ravn-ecommerce/src/main/java/com/ravn/ecommerce/application/usecases/refund/GetUserRefundsUseCase.java)
 
-Cambiar el tipo de retorno de `List<Refund>` a `List<RefundResponse>`.
+Changed the return type from `List<Refund>` to `List<RefundResponse>`.
 
-#### [MODIFY] [GetPendingRefundsUseCase.java](file:///d:/RAVN/ravn-ecommerce/src/main/java/com/ravn/ecommerce/application/usecases/order/GetPendingRefundsUseCase.java)
+#### [MODIFY] [GetPendingRefundsUseCase.java](file:///d:/RAVN/ravn-ecommerce/src/main/java/com/ravn/ecommerce/application/usecases/refund/GetPendingRefundsUseCase.java)
 
-Cambiar el tipo de retorno de `List<Refund>` a `List<RefundResponse>`.
+Changed the return type from `List<Refund>` to `List<RefundResponse>`.
 
 ---
 
@@ -223,7 +223,7 @@ Cambiar el tipo de retorno de `List<Refund>` a `List<RefundResponse>`.
 
 #### [MODIFY] [RefundController.java](file:///d:/RAVN/ravn-ecommerce/src/main/java/com/ravn/ecommerce/presentation/rest/controllers/RefundController.java)
 
-Reemplazar todos los `Refund` en los tipos de retorno por `RefundResponse`.
+Replaced all `Refund` return types with `RefundResponse`.
 
 ```diff
 - import com.ravn.ecommerce.domain.model.order.Refund;
@@ -243,16 +243,16 @@ Reemplazar todos los `Refund` en los tipos de retorno por `RefundResponse`.
 
 ## Business Logic Review
 
-La lógica de cancellation/refund ya está correctamente definida:
+The cancellation/refund logic is already correctly defined:
 
-| Escenario | Qué pasa |
+| Scenario | What happens |
 |---|---|
-| Orden en `PENDING` + se cancela | `Order.cancel()` → status = `CANCELLED`, items restockeados |
-| Orden en otro estado (`PAID`, `SHIPPED`, etc.) | **No** se puede cancelar directamente. Se usa el flujo de refund: `RequestRefundUseCase` crea el request en `PENDING` |
-| Admin aprueba el refund | Stripe refund, inventario restockeado, order → `REFUNDED`, payment → `REFUNDED`, refund → `APPROVED` |
-| Admin rechaza el refund | Refund → `REJECTED`, orden permanece en su estado original |
+| Order in `PENDING` + cancelled | `Order.cancel()` → status = `CANCELLED`, items restocked |
+| Order in another state (`PAID`, `SHIPPED`, etc.) | **Cannot** be cancelled directly. Uses the refund flow: `RequestRefundUseCase` creates the request as `PENDING` |
+| Admin approves refund | Stripe refund, inventory restocked, order → `REFUNDED`, payment → `REFUNDED`, refund → `APPROVED` |
+| Admin rejects refund | Refund → `REJECTED`, order remains in its original state |
 
-Esta lógica **ya existe y es correcta** en `CancelOrderUseCase`, `CancelUserOrderUseCase`, `ApproveRefundUseCase`, y `RejectRefundUseCase`. No requiere cambios adicionales en las use cases más allá del tipo de retorno.
+This logic **already exists and is correct** in `CancelOrderUseCase`, `CancelUserOrderUseCase`, `ApproveRefundUseCase`, and `RejectRefundUseCase`. No additional changes are needed in the use cases beyond the return type.
 
 ---
 
@@ -261,24 +261,24 @@ Esta lógica **ya existe y es correcta** en `CancelOrderUseCase`, `CancelUserOrd
 ### Automated Tests
 
 ```bash
-# 1. Verificar compilación
+# 1. Verify compilation
 mvn compile -q
 
-# 2. Ejecutar todos los tests existentes
+# 2. Run all existing tests
 mvn test -q
 ```
 
 ### Manual API Verification
 
-Con la aplicación corriendo (`mvn spring-boot:run`):
+With the application running (`mvn spring-boot:run`):
 
-1. `POST /auth/login` (usuario CLIENT) → obtener JWT
-2. Con JWT: `POST /orders` → crear orden (estado `PENDING`)
-3. `DELETE /orders/{id}` (o endpoint de cancel) → orden pasa a `CANCELLED`, inventario restaurado
-4. Crear otra orden, simular pago (webhook Stripe o fixture de test)
-5. `POST /refunds` `{"orderId": <id>, "reason": "Damaged"}` → respuesta `201`, body es `RefundResponse` con `status: PENDING`
-6. `GET /refunds/me` → lista de `RefundResponse`
-7. `POST /auth/login` (MANAGER) → obtener JWT de manager
-8. `GET /refunds/pending` → ver refund en lista
+1. `POST /auth/login` (CLIENT user) → get JWT
+2. With JWT: `POST /orders` → create order (status `PENDING`)
+3. `DELETE /orders/{id}` (or cancel endpoint) → order becomes `CANCELLED`, inventory restored
+4. Create another order, simulate payment (Stripe webhook or test fixture)
+5. `POST /refunds` `{"orderId": <id>, "reason": "Damaged"}` → response `201`, body is `RefundResponse` with `status: PENDING`
+6. `GET /refunds/me` → list of `RefundResponse`
+7. `POST /auth/login` (MANAGER) → get manager JWT
+8. `GET /refunds/pending` → see refund in list
 9. `POST /refunds/{id}/approve` `{"adminNote": "OK"}` → `200 OK`
-10. Verificar en DB: `orders.status = 6` (REFUNDED), `refunds.status = 2` (APPROVED)
+10. Verify in DB: `orders.status = 6` (REFUNDED), `refunds.status = 2` (APPROVED)

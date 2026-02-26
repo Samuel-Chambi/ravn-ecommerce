@@ -1,7 +1,9 @@
 package com.ravn.ecommerce.application.repositories;
 
 import com.ravn.ecommerce.domain.model.user.User;
+import com.ravn.ecommerce.domain.model.user.UserRole;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository {
@@ -16,4 +18,6 @@ public interface UserRepository {
     boolean existsById(Long userId);
 
     void deleteById(Long userId);
+
+    List<User> findByRole(UserRole role);
 }

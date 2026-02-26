@@ -2,11 +2,13 @@ package com.ravn.ecommerce.application.usecases.refund;
 
 import com.ravn.ecommerce.application.usecases.UseCase;
 import com.ravn.ecommerce.application.dto.response.RefundResponse;
+import com.ravn.ecommerce.application.events.EventPublisher;
 import com.ravn.ecommerce.application.usecases.refund.command.RequestRefundCommand;
 import com.ravn.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ravn.ecommerce.domain.exceptions.InvalidOrderLogicException;
 import com.ravn.ecommerce.domain.model.order.Order;
 import com.ravn.ecommerce.domain.model.order.Refund;
+import com.ravn.ecommerce.domain.model.order.events.RefundRequestedEvent;
 import com.ravn.ecommerce.application.repositories.OrderRepository;
 import com.ravn.ecommerce.application.repositories.RefundRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ public class RequestRefundUseCase implements UseCase<RequestRefundCommand, Refun
 
     private final OrderRepository orderRepository;
     private final RefundRepository refundRepository;
-    // Optional: private final EventPublisher eventPublisher;
+    private final EventPublisher eventPublisher;
 
     @Override
     public RefundResponse execute(RequestRefundCommand command) {
@@ -42,8 +44,8 @@ public class RequestRefundUseCase implements UseCase<RequestRefundCommand, Refun
 
         log.info("Refund request created successfully with ID {} for Order ID {}", savedRequest.getId(), order.getId());
 
-        // TODO: In the future, publish an event like RefundRequestedEvent to notify
-        // admins via Email
+        eventPublisher.publish(new RefundRequestedEvent(
+                savedRequest.getId(), order.getId(), command.userId(), command.reason()));
 
         return RefundResponse.toDto(savedRequest);
     }

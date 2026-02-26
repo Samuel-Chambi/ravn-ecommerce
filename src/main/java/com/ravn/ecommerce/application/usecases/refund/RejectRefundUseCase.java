@@ -1,9 +1,11 @@
 package com.ravn.ecommerce.application.usecases.refund;
 
 import com.ravn.ecommerce.application.usecases.UseCase;
+import com.ravn.ecommerce.application.events.EventPublisher;
 import com.ravn.ecommerce.application.usecases.refund.command.RejectRefundCommand;
 import com.ravn.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ravn.ecommerce.domain.model.order.Refund;
+import com.ravn.ecommerce.domain.model.order.events.RefundRejectedEvent;
 import com.ravn.ecommerce.application.repositories.RefundRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class RejectRefundUseCase implements UseCase<RejectRefundCommand, Void> {
 
     private final RefundRepository refundRepository;
-    // Opcional: private final EventPublisher eventPublisher;
+    private final EventPublisher eventPublisher;
 
     @Override
     public Void execute(RejectRefundCommand command) {
@@ -31,8 +33,8 @@ public class RejectRefundUseCase implements UseCase<RejectRefundCommand, Void> {
 
         log.info("Refund request ID {} REJECTED.", refund.getId());
 
-        // TODO: In the future, publish an event like RefundRejectedEvent to notify the
-        // user via Email
+        eventPublisher.publish(new RefundRejectedEvent(
+                refund.getId(), refund.getOrderId(), refund.getUserId(), command.adminNote()));
 
         return null;
     }
