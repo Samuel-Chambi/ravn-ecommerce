@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
-@Tag(name = "Products (Public)", description = "Public endpoints for browsing, searching, and viewing products")
+@Tag(name = "Products", description = "Public endpoints for browsing, searching, and viewing products")
 public class ProductController {
 
     private final ListProductsUseCase listProductsUseCase;

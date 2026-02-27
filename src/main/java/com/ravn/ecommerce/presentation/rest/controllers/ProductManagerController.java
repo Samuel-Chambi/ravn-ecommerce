@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/products/manage")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('MANAGER')")
-@Tag(name = "Product Management (Admin)", description = "Manager-only endpoints for comprehensive product administration")
+@Tag(name = "Product Management", description = "Manager-only endpoints for comprehensive product administration")
 public class ProductManagerController {
 
     private final ListProductsUseCase listProductsUseCase;
