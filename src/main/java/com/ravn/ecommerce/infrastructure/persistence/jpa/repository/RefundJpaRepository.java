@@ -11,4 +11,6 @@ public interface RefundJpaRepository extends JpaRepository<RefundJpaEntity, Long
     List<RefundJpaEntity> findByUserId(Long userId);
 
     List<RefundJpaEntity> findByStatus(int status);
+
+    boolean existsByOrderIdAndStatusIn(Long orderId, List<Integer> statuses);
 }

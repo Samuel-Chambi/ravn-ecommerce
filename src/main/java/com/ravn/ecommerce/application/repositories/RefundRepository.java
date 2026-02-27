@@ -14,4 +14,6 @@ public interface RefundRepository {
     List<Refund> findByUserId(Long userId);
 
     List<Refund> findByStatus(RefundStatus status);
+
+    boolean existsActiveByOrderId(Long orderId);
 }

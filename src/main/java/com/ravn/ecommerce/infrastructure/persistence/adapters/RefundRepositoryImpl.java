@@ -49,4 +49,10 @@ public class RefundRepositoryImpl implements RefundRepository {
                 .map(mapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public boolean existsActiveByOrderId(Long orderId) {
+        // PENDING = 1, APPROVED = 2
+        return repository.existsByOrderIdAndStatusIn(orderId, List.of(1, 2));
+    }
 }

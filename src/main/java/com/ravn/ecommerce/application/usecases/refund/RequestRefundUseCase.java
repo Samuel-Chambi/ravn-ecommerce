@@ -20,33 +20,41 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class RequestRefundUseCase implements UseCase<RequestRefundCommand, RefundResponse> {
 
-    private final OrderRepository orderRepository;
-    private final RefundRepository refundRepository;
-    private final EventPublisher eventPublisher;
+        private final OrderRepository orderRepository;
+        private final RefundRepository refundRepository;
+        private final EventPublisher eventPublisher;
 
-    @Override
-    public RefundResponse execute(RequestRefundCommand command) {
-        log.info("User {} is requesting a refund for Order {}", command.userId(), command.orderId());
+        @Override
+        public RefundResponse execute(RequestRefundCommand command) {
+                log.info("User {} is requesting a refund for Order {}", command.userId(), command.orderId());
 
-        Order order = orderRepository.findByIdAndUserId(command.orderId(), command.userId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("Order ID %d not found for User ID %d", command.orderId(), command.userId())));
+                Order order = orderRepository.findByIdAndUserId(command.orderId(), command.userId())
+                                .orElseThrow(() -> new EntityNotFoundException(
+                                                String.format("Order ID %d not found for User ID %d", command.orderId(),
+                                                                command.userId())));
 
-        if (!order.canRequestRefund()) {
-            throw new InvalidOrderLogicException(
-                    String.format(
-                            "Order ID %d with status %s is not eligible for a refund request. Only PAID, SHIPPED, or DELIVERED orders can be refunded.",
-                            order.getId(), order.getStatus()));
+                if (!order.canRequestRefund()) {
+                        throw new InvalidOrderLogicException(
+                                        String.format(
+                                                        "Order ID %d with status %s is not eligible for a refund request. Only PAID, SHIPPED, or DELIVERED orders can be refunded.",
+                                                        order.getId(), order.getStatus()));
+                }
+
+                if (refundRepository.existsActiveByOrderId(order.getId())) {
+                        throw new InvalidOrderLogicException(
+                                        String.format("Order ID %d already has a pending or approved refund request.",
+                                                        order.getId()));
+                }
+
+                Refund newRequest = Refund.createPending(order.getId(), command.userId(), command.reason());
+                Refund savedRequest = refundRepository.save(newRequest);
+
+                log.info("Refund request created successfully with ID {} for Order ID {}", savedRequest.getId(),
+                                order.getId());
+
+                eventPublisher.publish(new RefundRequestedEvent(
+                                savedRequest.getId(), order.getId(), command.userId(), command.reason()));
+
+                return RefundResponse.toDto(savedRequest);
         }
-
-        Refund newRequest = Refund.createPending(order.getId(), command.userId(), command.reason());
-        Refund savedRequest = refundRepository.save(newRequest);
-
-        log.info("Refund request created successfully with ID {} for Order ID {}", savedRequest.getId(), order.getId());
-
-        eventPublisher.publish(new RefundRequestedEvent(
-                savedRequest.getId(), order.getId(), command.userId(), command.reason()));
-
-        return RefundResponse.toDto(savedRequest);
-    }
 }
