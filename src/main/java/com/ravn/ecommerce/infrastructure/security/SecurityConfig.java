@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/graphiql/**").permitAll()
                         // GraphQL endpoint: security is enforced at method level via @PreAuthorize
                         .requestMatchers("/graphql").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/products/manage/**").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
 
