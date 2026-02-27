@@ -29,22 +29,15 @@ public interface ProductRepository {
 
     Window<Product> findByCategoryId(Long categoryId, ScrollPosition position, int limit, Sort sort);
 
-    Window<Product> findByCategoryIdAndIsEnabled(Long categoryId, boolean isEnabled, ScrollPosition position,
-                                                 int limit,
-                                                 Sort sort);
+    Window<Product> findByCategoryIdAndIsEnabled(Long categoryId, boolean isEnabled, ScrollPosition position, int limit, Sort sort);
 
     // Search methods
     Window<Product> searchByName(String name, boolean isEnabled, ScrollPosition position, int limit, Sort sort);
 
-    Window<Product> searchByNameAndCategory(String name, Long categoryId, boolean isEnabled,
-                                            ScrollPosition position,
-                                            int limit, Sort sort);
+    Window<Product> searchByNameAndCategory(String name, Long categoryId, boolean isEnabled, ScrollPosition position, int limit, Sort sort);
 
-    // Search methods (ignoring status)
-    // Window<Product> searchByName(String name, ScrollPosition position, int limit,
-    // Sort sort);
+    // Search methods (ignoring status - for managers)
+    Window<Product> searchByName(String name, ScrollPosition position, int limit, Sort sort);
 
-    // Window<Product> searchByNameAndCategory(String name, Long categoryId,
-    // ScrollPosition position, int limit,
-    // Sort sort);
+    Window<Product> searchByNameAndCategory(String name, Long categoryId, ScrollPosition position, int limit, Sort sort);
 }

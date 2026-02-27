@@ -35,12 +35,10 @@ public class ProductController {
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDirection,
-            @RequestParam(required = false, defaultValue = "1") Long categoryId,
-            @RequestParam(required = false, defaultValue = "") String search,
-            // TODO: This parameter should probably be restricted to Admins in the future
-            @RequestParam(defaultValue = "false") boolean showDisabled) {
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false, defaultValue = "") String search) {
         ListProductsQuery query = new ListProductsQuery(cursor, limit, sortBy, sortDirection, categoryId, search,
-                showDisabled);
+                false);
         return ResponseEntity.ok(listProductsUseCase.execute(query));
     }
 

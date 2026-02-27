@@ -39,7 +39,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public boolean existsById(Long productId){
+    public boolean existsById(Long productId) {
         return jpaRepository.existsById(productId);
     }
 
@@ -54,7 +54,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public void deleteById(Long productId) {
         // DeleteById -> Soft delete using deletedAt field
-         jpaRepository.deleteById(productId);
+        jpaRepository.deleteById(productId);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public Window<Product> findByCategoryIdAndIsEnabled(Long categoryId, boolean isEnabled, ScrollPosition position,
-                                                        int limit, Sort sort) {
+            int limit, Sort sort) {
         return jpaRepository.findByCategoryIdAndIsEnabled(categoryId, isEnabled, position, Limit.of(limit), sort)
                 .map(mapper::toDomain);
     }
@@ -91,11 +91,26 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public Window<Product> searchByNameAndCategory(String name, Long categoryId, boolean isEnabled,
-                                                   ScrollPosition position, int limit, Sort sort) {
+            ScrollPosition position, int limit, Sort sort) {
         return jpaRepository
                 .findByNameContainingIgnoreCaseAndCategoryIdAndIsEnabled(name, categoryId, isEnabled, position,
                         Limit.of(limit),
                         sort)
+                .map(mapper::toDomain);
+    }
+
+    @Override
+    public Window<Product> searchByName(String name, ScrollPosition position, int limit, Sort sort) {
+        return jpaRepository
+                .findByNameContainingIgnoreCase(name, position, Limit.of(limit), sort)
+                .map(mapper::toDomain);
+    }
+
+    @Override
+    public Window<Product> searchByNameAndCategory(String name, Long categoryId,
+            ScrollPosition position, int limit, Sort sort) {
+        return jpaRepository
+                .findByNameContainingIgnoreCaseAndCategoryId(name, categoryId, position, Limit.of(limit), sort)
                 .map(mapper::toDomain);
     }
 }
