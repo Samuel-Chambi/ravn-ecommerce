@@ -1,5 +1,8 @@
 package com.ravn.ecommerce.presentation.rest.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import com.ravn.ecommerce.application.dto.response.ProductImageResponse;
 import com.ravn.ecommerce.application.usecases.productImage.UploadProductImageUseCase;
 import com.ravn.ecommerce.application.usecases.productImage.DeleteProductImageUseCase;
@@ -21,17 +24,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/products/{productId}/images")
 @RequiredArgsConstructor
+@Tag(name = "Product Images", description = "Endpoints for uploading, retrieving, and managing product images")
 public class ProductImageController {
     private final UploadProductImageUseCase uploadProductImageUseCase;
     private final GetProductImagesUseCase getProductImagesUseCase;
     private final DeleteProductImageUseCase deleteProductImageUseCase;
 
+    @Operation(summary = "Get product images", description = "Retrieves all images associated with a specific product.")
     @GetMapping
     public ResponseEntity<List<ProductImageResponse>> getProductImages(@PathVariable Long productId) {
         List<ProductImageResponse> images = getProductImagesUseCase.execute(productId);
         return ResponseEntity.ok(images);
     }
 
+    @Operation(summary = "Upload product images", description = "Uploads one or more images for a specific product. Can optionally set the first uploaded image as the primary image.")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<List<ProductImageResponse>> uploadImages(
             @PathVariable Long productId,
@@ -40,11 +46,11 @@ public class ProductImageController {
         List<ProductImageResponse> uploadedImages = uploadProductImageUseCase.execute(new UploadProductImageCommand(
                 productId,
                 files,
-                markFirstAsPrimary
-        ));
+                markFirstAsPrimary));
         return ResponseEntity.status(HttpStatus.CREATED).body(uploadedImages);
     }
 
+    @Operation(summary = "Delete product image", description = "Deletes a specific image from a product. Requires MANAGER role.")
     @DeleteMapping("/{imageId}")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Void> deleteImage(

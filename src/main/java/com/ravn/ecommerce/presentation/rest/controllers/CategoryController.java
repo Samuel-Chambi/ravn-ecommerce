@@ -1,5 +1,8 @@
 package com.ravn.ecommerce.presentation.rest.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import com.ravn.ecommerce.application.dto.request.category.CreateCategoryRequest;
 import com.ravn.ecommerce.application.dto.request.category.UpdateCategoryRequest;
 import com.ravn.ecommerce.application.dto.response.CategoryResponse;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/categories")
 @RequiredArgsConstructor
+@Tag(name = "Categories", description = "Endpoints for retrieving and managing product categories")
 public class CategoryController {
     private final ListCategoriesUseCase listCategoriesUseCase;
     private final GetCategoryByIdUseCase getCategoryByIdUseCase;
@@ -28,6 +32,7 @@ public class CategoryController {
     private final DeleteCategoryUseCase deleteCategoryUseCase;
     private final CurrentUserService currentUserService;
 
+    @Operation(summary = "Get all categories", description = "Retrieves a paginated list of all product categories available in the system.")
     @GetMapping
     public ResponseEntity<PagedCategoryResponse> getAllCategories(
             @RequestParam(required = false, defaultValue = "") String cursor,
@@ -36,12 +41,14 @@ public class CategoryController {
         return ResponseEntity.ok(listCategoriesUseCase.execute(query));
     }
 
+    @Operation(summary = "Get a category by ID", description = "Retrieves the details of a specific product category by its ID.")
     @GetMapping("/{categoryId}")
     public ResponseEntity<CategoryResponse> getCategoryById(
             @PathVariable Long categoryId) {
         return ResponseEntity.ok(getCategoryByIdUseCase.execute(categoryId));
     }
 
+    @Operation(summary = "Create a new category", description = "Creates a new product category. Requires MANAGER role.")
     @PostMapping
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<CategoryResponse> createCategory(
@@ -51,6 +58,7 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(category);
     }
 
+    @Operation(summary = "Update a category", description = "Updates an existing product category. Requires MANAGER role.")
     @PutMapping("/{categoryId}")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<CategoryResponse> updateCategoryById(
@@ -62,6 +70,7 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "Delete a category", description = "Deletes an existing product category. Requires MANAGER role.")
     @DeleteMapping("/{categoryId}")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Void> deleteCategoryById(

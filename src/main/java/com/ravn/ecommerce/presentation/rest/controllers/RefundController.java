@@ -1,5 +1,8 @@
 package com.ravn.ecommerce.presentation.rest.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import com.ravn.ecommerce.application.dto.response.RefundResponse;
 import com.ravn.ecommerce.application.services.CurrentUserService;
 import com.ravn.ecommerce.application.usecases.refund.command.ApproveRefundCommand;
@@ -30,6 +33,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/refunds")
 @RequiredArgsConstructor
+@Tag(name = "Refunds", description = "Endpoints for requesting, viewing, and processing order refunds")
 public class RefundController {
 
     private final RequestRefundUseCase requestRefundUseCase;
@@ -39,6 +43,7 @@ public class RefundController {
     private final GetPendingRefundsUseCase getPendingRefundsUseCase;
     private final CurrentUserService currentUserService;
 
+    @Operation(summary = "Request a refund", description = "Allows a user to request a refund for a specific completed order. Provides a reason for the request.")
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<RefundResponse> requestRefund(
@@ -50,6 +55,7 @@ public class RefundController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Operation(summary = "Get my refunds", description = "Retrieves a list of all refund requests made by the currently authenticated user.")
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<RefundResponse>> getMyRefunds() {
@@ -58,6 +64,7 @@ public class RefundController {
         return ResponseEntity.status(HttpStatus.OK).body(refunds);
     }
 
+    @Operation(summary = "Get pending refunds (Admin)", description = "Retrieves a list of all unresolved (pending) refund requests in the system. Requires MANAGER role.")
     @GetMapping("/pending")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<List<RefundResponse>> getPendingRefunds() {
@@ -65,6 +72,7 @@ public class RefundController {
         return ResponseEntity.status(HttpStatus.OK).body(refunds);
     }
 
+    @Operation(summary = "Approve a refund (Admin)", description = "Approves a pending refund request and processes the payment refund. Requires MANAGER role.")
     @PostMapping("/{refundId}/approve")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Void> approveRefund(
@@ -75,6 +83,7 @@ public class RefundController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Reject a refund (Admin)", description = "Rejects a pending refund request with a provided reason. Requires MANAGER role.")
     @PostMapping("/{refundId}/reject")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Void> rejectRefund(

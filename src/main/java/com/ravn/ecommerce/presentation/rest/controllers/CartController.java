@@ -1,5 +1,8 @@
 package com.ravn.ecommerce.presentation.rest.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import com.ravn.ecommerce.application.dto.request.cart.AddToCartRequest;
 import com.ravn.ecommerce.application.dto.request.cart.UpdateItemQuantityRequest;
 import com.ravn.ecommerce.application.dto.response.CartResponse;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/cart")
 @RequiredArgsConstructor
+@Tag(name = "Shopping Cart", description = "Endpoints for managing the user's shopping cart")
 public class CartController {
 
     private final GetCurrentUserCartUseCase getCurrentUserCartUseCase;
@@ -30,6 +34,7 @@ public class CartController {
     private final CreateOrderFromCartUseCase createOrderFromCartUseCase;
     private final CurrentUserService currentUserService;
 
+    @Operation(summary = "Get current user's cart", description = "Retrieves the active shopping cart and its items for the currently authenticated user.")
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CartResponse> getCurrentUserCart() {
@@ -37,6 +42,7 @@ public class CartController {
         return ResponseEntity.ok(getCurrentUserCartUseCase.execute(userId));
     }
 
+    @Operation(summary = "Add item to cart", description = "Adds a specific quantity of a product to the user's shopping cart.")
     @PostMapping("/items")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CartResponse> addProductToCart(
@@ -46,6 +52,7 @@ public class CartController {
                 new AddItemToCartCommand(userId, request.getProductId(), request.getQuantity())));
     }
 
+    @Operation(summary = "Checkout cart", description = "Converts the current shopping cart into a new order and clears the cart.")
     @PostMapping("/check-out")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<OrderResponse> createOrderFromCart() {
@@ -53,6 +60,7 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createOrderFromCartUseCase.execute(userId));
     }
 
+    @Operation(summary = "Clear cart", description = "Removes all items from the current user's shopping cart.")
     @DeleteMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> clearCurrentUserCart() {
@@ -61,6 +69,7 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @Operation(summary = "Update item quantity", description = "Updates the quantity of a specific product already in the shopping cart.")
     @PutMapping("/items/{productId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CartResponse> updateItemQuantity(
@@ -71,6 +80,7 @@ public class CartController {
                 new UpdateItemQuantityCommand(userId, productId, request.getQuantity())));
     }
 
+    @Operation(summary = "Remove item from cart", description = "Removes a specific product entirely from the shopping cart.")
     @DeleteMapping("/items/{productId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CartResponse> removeItemFromCart(@PathVariable Long productId) {

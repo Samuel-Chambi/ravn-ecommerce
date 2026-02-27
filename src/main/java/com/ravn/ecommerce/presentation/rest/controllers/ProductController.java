@@ -1,5 +1,8 @@
 package com.ravn.ecommerce.presentation.rest.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import com.ravn.ecommerce.application.dto.request.product.ProductRequest;
 import com.ravn.ecommerce.application.dto.request.product.UpdateProductRequest;
 import com.ravn.ecommerce.application.dto.response.PagedProductResponse;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
+@Tag(name = "Products (Public)", description = "Public endpoints for browsing, searching, and viewing products")
 public class ProductController {
 
     private final ListProductsUseCase listProductsUseCase;
@@ -29,6 +33,7 @@ public class ProductController {
     private final UpdateProductUseCase updateProductUseCase;
     private final DeleteProductUseCase deleteProductUseCase;
 
+    @Operation(summary = "List/Search products", description = "Retrieves a paginated list of active products. Supports sorting, filtering by category, and text search.")
     @GetMapping
     public ResponseEntity<PagedProductResponse> getProducts(
             @RequestParam(required = false, defaultValue = "") String cursor,
@@ -42,11 +47,13 @@ public class ProductController {
         return ResponseEntity.ok(listProductsUseCase.execute(query));
     }
 
+    @Operation(summary = "Get product details", description = "Retrieves the full details of a specific product by its ID.")
     @GetMapping("/{productId}")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long productId) {
         return ResponseEntity.ok(getProductByIdUseCase.execute(productId));
     }
 
+    @Operation(summary = "Create product (Admin)", description = "Creates a new product in the catalog. Requires MANAGER role.")
     @PostMapping
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<ProductResponse> createProduct(@RequestBody @Valid ProductRequest productRequest) {
@@ -56,6 +63,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
+    @Operation(summary = "Update product (Admin)", description = "Updates an existing product's details. Requires MANAGER role.")
     @PutMapping("/{productId}")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<ProductResponse> updateProductById(
@@ -67,6 +75,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(product);
     }
 
+    @Operation(summary = "Delete product (Admin)", description = "Soft-deletes an existing product. Requires MANAGER role.")
     @DeleteMapping("/{productId}")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Void> deleteProductById(

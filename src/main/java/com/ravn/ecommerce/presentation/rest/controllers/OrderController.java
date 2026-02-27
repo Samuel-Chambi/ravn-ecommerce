@@ -1,5 +1,8 @@
 package com.ravn.ecommerce.presentation.rest.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import com.ravn.ecommerce.application.dto.response.OrderResponse;
 import com.ravn.ecommerce.application.services.CurrentUserService;
 import com.ravn.ecommerce.application.usecases.order.*;
@@ -19,6 +22,7 @@ import org.springframework.data.domain.Window;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/orders")
+@Tag(name = "Orders", description = "Endpoints for placing, retrieving, and managing orders")
 public class OrderController {
 
     private final GetUserOrdersUseCase getUserOrdersUseCase;
@@ -31,6 +35,7 @@ public class OrderController {
 
     // ── User-scoped (CLIENT + MANAGER) ──────────────────────────────────────
 
+    @Operation(summary = "Get user's orders", description = "Retrieves a paginated list of all orders placed by the currently authenticated user.")
     @GetMapping("/me")
     public ResponseEntity<Window<OrderResponse>> getMyOrders(
             @RequestParam(defaultValue = "10") int limit) {
@@ -39,12 +44,14 @@ public class OrderController {
                 new GetUserOrdersCommand(userId, ScrollPosition.keyset(), Limit.of(limit))));
     }
 
+    @Operation(summary = "Get user's order by ID", description = "Retrieves details of a specific order placed by the currently authenticated user.")
     @GetMapping("/me/{orderId}")
     public ResponseEntity<OrderResponse> getMyOrderById(@PathVariable Long orderId) {
         Long userId = currentUserService.getCurrentUserId();
         return ResponseEntity.ok(getUserOrderByIdUseCase.execute(new GetUserOrderByIdCommand(userId, orderId)));
     }
 
+    @Operation(summary = "Cancel user's order", description = "Cancels a specific order placed by the currently authenticated user, provided it is in a cancellable state.")
     @PatchMapping("/me/{orderId}/cancel")
     public ResponseEntity<Void> cancelMyOrder(@PathVariable Long orderId) {
         Long userId = currentUserService.getCurrentUserId();
@@ -54,19 +61,21 @@ public class OrderController {
 
     // ── Manager-only ─────────────────────────────────────────────────────────
 
+    @Operation(summary = "Get all orders (Admin)", description = "Retrieves a paginated list of all orders in the system. Requires MANAGER role.")
     @GetMapping
-
     public ResponseEntity<Window<OrderResponse>> getAllOrders(
             @RequestParam(defaultValue = "10") int limit) {
         return ResponseEntity.ok(getAllOrdersUseCase.execute(
                 new GetAllOrdersCommand(ScrollPosition.keyset(), Limit.of(limit))));
     }
 
+    @Operation(summary = "Get order by ID (Admin)", description = "Retrieves details of any specific order by its ID. Requires MANAGER role.")
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long orderId) {
         return ResponseEntity.ok(getOrderByIdUseCase.execute(orderId));
     }
 
+    @Operation(summary = "Cancel order (Admin)", description = "Cancels any specific order in the system. Requires MANAGER role.")
     @PatchMapping("/{orderId}/cancel")
     public ResponseEntity<Void> cancelOrder(@PathVariable Long orderId) {
         cancelOrderUseCase.execute(orderId);
