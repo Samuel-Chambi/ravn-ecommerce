@@ -36,6 +36,8 @@ public class SecurityConfig {
                         // Public endpoints
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/graphiql/**").permitAll()
+                        // Swagger UI & API Docs
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         // GraphQL endpoint: security is enforced at method level via @PreAuthorize
                         .requestMatchers("/graphql").permitAll()
                         .requestMatchers(HttpMethod.GET, "/products/manage/**").hasRole("MANAGER")
