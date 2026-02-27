@@ -41,14 +41,14 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public List<Order> findAllByUserId(Long userId) {
-        return orderJpaRepository.findByUserId(userId).stream()
+        return orderJpaRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(orderMapper::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Window<Order> findAllByUserId(Long userId, ScrollPosition position, Limit limit) {
-        return orderJpaRepository.findByUserId(userId, position, limit)
+        return orderJpaRepository.findByUserIdOrderByCreatedAtDesc(userId, position, limit)
                 .map(orderMapper::toDomain);
     }
 
@@ -61,7 +61,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public Window<Order> findAll(ScrollPosition position, Limit limit) {
-        return orderJpaRepository.findAllBy(position, limit)
+        return orderJpaRepository.findAllByOrderByCreatedAtDesc(position, limit)
                 .map(orderMapper::toDomain);
     }
 

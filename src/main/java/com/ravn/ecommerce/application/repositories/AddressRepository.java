@@ -18,5 +18,7 @@ public interface AddressRepository {
 
     boolean existsById(Long id);
 
+    List<Address> findAllById(List<Long> ids);
+
     void deleteById(Long id);
 }

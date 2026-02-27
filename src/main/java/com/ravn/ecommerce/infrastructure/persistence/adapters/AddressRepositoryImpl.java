@@ -52,6 +52,13 @@ public class AddressRepositoryImpl implements AddressRepository {
     }
 
     @Override
+    public List<Address> findAllById(List<Long> ids) {
+        return addressJpaRepository.findAllById(ids).stream()
+                .map(addressMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void deleteById(Long id) {
         addressJpaRepository.deleteById(id);
     }

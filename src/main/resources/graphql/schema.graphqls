@@ -17,6 +17,18 @@ type User {
     email: String!
 }
 
+type Address {
+    id: ID!
+    fullName: String!
+    phone: String
+    street: String!
+    city: String!
+    state: String
+    country: String!
+    zipCode: String!
+    isDefault: Boolean!
+}
+
 type OrderItem {
     id: ID!
     productName: String!
@@ -28,6 +40,7 @@ type OrderItem {
 type Order {
     id: ID!
     client: User
+    shippingAddress: Address
     status: OrderStatus!
     total: BigDecimal!
     items: [OrderItem!]!

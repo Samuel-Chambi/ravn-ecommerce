@@ -17,14 +17,14 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
     Optional<OrderJpaEntity> findById(Long id);
 
     @EntityGraph(attributePaths = "orderItems")
-    List<OrderJpaEntity> findByUserId(Long userId);
+    List<OrderJpaEntity> findByUserIdOrderByCreatedAtDesc(Long userId);
 
     @EntityGraph(attributePaths = "orderItems")
     Optional<OrderJpaEntity> findByIdAndUserId(Long id, Long userId);
 
     @EntityGraph(attributePaths = "orderItems")
-    Window<OrderJpaEntity> findByUserId(Long userId, ScrollPosition position, Limit limit);
+    Window<OrderJpaEntity> findByUserIdOrderByCreatedAtDesc(Long userId, ScrollPosition position, Limit limit);
 
     @EntityGraph(attributePaths = "orderItems")
-    Window<OrderJpaEntity> findAllBy(ScrollPosition position, Limit limit);
+    Window<OrderJpaEntity> findAllByOrderByCreatedAtDesc(ScrollPosition position, Limit limit);
 }
