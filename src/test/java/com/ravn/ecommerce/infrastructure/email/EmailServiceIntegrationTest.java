@@ -1,49 +1,102 @@
 package com.ravn.ecommerce.infrastructure.email;
 
-import com.ravn.ecommerce.application.services.EmailService;
-import org.awaitility.Awaitility;
+import com.ravn.ecommerce.application.config.AppConfig;
+import com.resend.Resend;
+import com.resend.services.emails.Emails;
+import com.resend.services.emails.model.CreateEmailOptions;
+import com.resend.services.emails.model.CreateEmailResponse;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mail.javamail.JavaMailSender;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Duration;
-import java.util.HashMap;
+import java.lang.reflect.Field;
 import java.util.Map;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
-public class EmailServiceIntegrationTest {
+@ExtendWith(MockitoExtension.class)
+class EmailServiceTest {
 
-    @Autowired
-    private EmailService emailService;
+    @Mock
+    private EmailTemplateEngine emailTemplateEngine;
+    @Mock
+    private AppConfig appConfig;
+    @Mock
+    private AppConfig.EmailConfig emailConfig;
+    @Mock
+    private AppConfig.EmailConfig.ResendConfig resendConfig;
+    @Mock
+    private Resend resend;
+    @Mock
+    private Emails emails;
 
-    @MockitoBean
-    private JavaMailSender javaMailSender;
+    private ResendEmailServiceImpl emailService;
+
+    /**
+     * Since the constructor creates a new Resend internally,
+     * we build the service with valid config and then inject a mock Resend via reflection.
+     */
+    @BeforeEach
+    void setUp() throws Exception {
+        when(appConfig.getEmail()).thenReturn(emailConfig);
+        when(emailConfig.getResend()).thenReturn(resendConfig);
+        when(resendConfig.getApiKey()).thenReturn("re_test_123456");
+
+        emailService = new ResendEmailServiceImpl(emailTemplateEngine, appConfig);
+
+        // Replace the real Resend with a mock via reflection
+        Field resendField = ResendEmailServiceImpl.class.getDeclaredField("resend");
+        resendField.setAccessible(true);
+        resendField.set(emailService, resend);
+    }
 
     @Test
-    public void testSendHtmlEmail() {
-        // Mock MimeMessage
-        MimeMessage mimeMessage = mock(MimeMessage.class);
-        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+    @DisplayName("Should send email via Resend API when enabled")
+    void shouldSendEmailViaResend() throws Exception {
+        when(emailConfig.isEnabled()).thenReturn(true);
+        when(emailConfig.getFrom()).thenReturn("noreply@test.com");
+        when(emailTemplateEngine.process(anyString(), anyMap())).thenReturn("<h1>Hello</h1>");
+        when(resend.emails()).thenReturn(emails);
+        when(emails.send(any(CreateEmailOptions.class)))
+                .thenReturn(new CreateEmailResponse("email-id-123"));
 
-        // Prepare context
-        Map<String, Object> context = new HashMap<>();
-        context.put("email", "test@example.com");
-        context.put("date", "2023-10-27 10:00:00");
+        emailService.sendHtmlEmail("user@test.com", "Welcome", "welcome", Map.of("name", "John"));
 
-        // Execute
-        emailService.sendHtmlEmail("test@example.com", "Test Subject", "password-changed", context);
+        verify(resend.emails()).send(any(CreateEmailOptions.class));
+        verify(emailTemplateEngine).process("welcome", Map.of("name", "John"));
+    }
 
-        // Verify that send was called asynchronously
-        Awaitility.await()
-                .atMost(Duration.ofSeconds(5))
-                .untilAsserted(() -> verify(javaMailSender, times(1)).send(mimeMessage));
+    @Test
+    @DisplayName("Should skip sending when email service is disabled")
+    void shouldSkipWhenDisabled() {
+        when(emailConfig.isEnabled()).thenReturn(false);
+
+        emailService.sendHtmlEmail("user@test.com", "Subject", "template", Map.of());
+
+        verifyNoInteractions(resend);
+        verifyNoInteractions(emailTemplateEngine);
+    }
+
+    @Test
+    @DisplayName("Should throw when Resend API key is missing")
+    void shouldThrowWhenApiKeyMissing() {
+        AppConfig config = mock(AppConfig.class);
+        AppConfig.EmailConfig emailCfg = mock(AppConfig.EmailConfig.class);
+        AppConfig.EmailConfig.ResendConfig resendCfg = mock(AppConfig.EmailConfig.ResendConfig.class);
+
+        when(config.getEmail()).thenReturn(emailCfg);
+        when(emailCfg.getResend()).thenReturn(resendCfg);
+        when(resendCfg.getApiKey()).thenReturn("");
+
+        assertThatThrownBy(() -> new ResendEmailServiceImpl(emailTemplateEngine, config))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Resend API key is missing");
     }
 }

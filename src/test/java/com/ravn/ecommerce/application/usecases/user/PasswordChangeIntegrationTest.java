@@ -1,53 +1,57 @@
 package com.ravn.ecommerce.application.usecases.user;
 
+import com.ravn.ecommerce.application.events.EventPublisher;
 import com.ravn.ecommerce.domain.model.user.User;
 import com.ravn.ecommerce.domain.model.user.UserRole;
-import org.awaitility.Awaitility;
+import com.ravn.ecommerce.domain.model.user.events.PasswordChangedEvent;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
-public class PasswordChangeIntegrationTest {
+@ExtendWith(MockitoExtension.class)
+class PasswordChangeUseCaseTest {
 
-    @Autowired
-    private ChangePasswordUseCase changePasswordUseCase;
-
-    @Autowired
+    @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private EventPublisher eventPublisher;
 
-    @MockitoBean
-    private JavaMailSender javaMailSender;
+    @InjectMocks
+    private ChangePasswordUseCase useCase;
 
     @Test
-    public void testPasswordChangeFlow() {
-        // Mock JavaMailSender
-        when(javaMailSender.createMimeMessage()).thenReturn(mock(jakarta.mail.internet.MimeMessage.class));
-
-        // Create a test user
-        User user = new User(1L, "test@example.com", "oldPasswordHash", UserRole.CLIENT, true, LocalDateTime.now());
+    @DisplayName("Should encode password and update user")
+    void shouldEncodeAndUpdatePassword() {
+        User user = new User(1L, "test@example.com", "oldHash", UserRole.CLIENT, true, LocalDateTime.now());
         String newPassword = "newSecurePassword123";
 
-        // Execute password change
-        changePasswordUseCase.execute(user, newPassword);
+        when(passwordEncoder.encode(newPassword)).thenReturn("newEncodedHash");
 
-        // Verify password was changed
-        assertTrue(passwordEncoder.matches(newPassword, user.getPasswordHash()),
-                "Password should be updated and match the new password");
+        useCase.execute(user, newPassword);
 
-        // Verify email was sent asynchronously
-        Awaitility.await()
-                .atMost(Duration.ofSeconds(5))
-                .untilAsserted(() -> verify(javaMailSender, times(1)).send(any(jakarta.mail.internet.MimeMessage.class)));
+        assertThat(user.getPasswordHash()).isEqualTo("newEncodedHash");
+        verify(passwordEncoder).encode(newPassword);
+    }
+
+    @Test
+    @DisplayName("Should publish PasswordChangedEvent after password change")
+    void shouldPublishPasswordChangedEvent() {
+        User user = new User(1L, "test@example.com", "oldHash", UserRole.CLIENT, true, LocalDateTime.now());
+
+        when(passwordEncoder.encode("newPass")).thenReturn("encodedNewPass");
+
+        useCase.execute(user, "newPass");
+
+        verify(eventPublisher).publish(any(PasswordChangedEvent.class));
     }
 }
