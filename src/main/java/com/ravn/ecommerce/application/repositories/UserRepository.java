@@ -20,4 +20,6 @@ public interface UserRepository {
     void deleteById(Long userId);
 
     List<User> findByRole(UserRole role);
+
+    List<User> findAllById(List<Long> ids);
 }
