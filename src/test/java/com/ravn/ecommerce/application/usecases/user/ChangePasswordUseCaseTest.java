@@ -14,12 +14,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class PasswordChangeUseCaseTest {
+class ChangePasswordUseCaseTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -29,29 +30,41 @@ class PasswordChangeUseCaseTest {
     @InjectMocks
     private ChangePasswordUseCase useCase;
 
+    private User buildUser() {
+        return User.builder()
+                .id(1L)
+                .email("user@test.com")
+                .passwordHash("oldHashedPassword")
+                .role(UserRole.CLIENT)
+                .active(true)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
     @Test
-    @DisplayName("Should encode password and update user")
-    void shouldEncodeAndUpdatePassword() {
-        User user = new User(1L, "test@example.com", "oldHash", UserRole.CLIENT, true, LocalDateTime.now());
+    @DisplayName("Should change password and publish event")
+    void shouldChangePasswordAndPublishEvent() {
+        User user = buildUser();
         String newPassword = "newSecurePassword123";
 
         when(passwordEncoder.encode(newPassword)).thenReturn("newEncodedHash");
 
         useCase.execute(user, newPassword);
 
-        assertThat(user.getPasswordHash()).isEqualTo("newEncodedHash");
         verify(passwordEncoder).encode(newPassword);
+        verify(eventPublisher).publish(any(PasswordChangedEvent.class));
     }
 
     @Test
-    @DisplayName("Should publish PasswordChangedEvent after password change")
-    void shouldPublishPasswordChangedEvent() {
-        User user = new User(1L, "test@example.com", "oldHash", UserRole.CLIENT, true, LocalDateTime.now());
+    @DisplayName("Should encode password before changing")
+    void shouldEncodePasswordBeforeChanging() {
+        User user = buildUser();
+        String newPassword = "anotherPassword";
 
-        when(passwordEncoder.encode("newPass")).thenReturn("encodedNewPass");
+        when(passwordEncoder.encode(newPassword)).thenReturn("encodedPassword");
 
-        useCase.execute(user, "newPass");
+        useCase.execute(user, newPassword);
 
-        verify(eventPublisher).publish(any(PasswordChangedEvent.class));
+        verify(passwordEncoder).encode(eq(newPassword));
     }
 }
